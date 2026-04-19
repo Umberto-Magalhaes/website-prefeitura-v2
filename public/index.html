@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Atendimento ao Cidadão</title>
+</head>
+<body>
+  <h1>Portal de Atendimento ao Cidadão</h1>
+
+  <h2>Registrar Solicitação</h2>
+
+  <form id="formSolicitacao">
+    <div>
+      <label for="intencao">Tipo de Reclamação:</label><br>
+      <select id="intencao" required>
+        <option value="">Selecione uma opção</option>
+        <option value="atraso_de_onibus">Atraso de ônibus</option>
+        <option value="conduta_motorista">Conduta inadequada do motorista</option>
+        <option value="superlotacao">Superlotação</option>
+        <option value="veiculo_quebrado">Veículo quebrado</option>
+        <option value="ma_condicao_do_veiculo">Má condição do veículo</option>
+        <option value="outros">Outros</option>
+      </select>
+    </div>
+    <br>
+
+    <div>
+      <label for="nome">Nome do cidadão:</label><br>
+      <input type="text" id="nome" required>
+    </div>
+    <br>
+
+    <div>
+      <label for="telefone">Telefone:</label><br>
+      <input type="text" id="telefone">
+    </div>
+    <br>
+
+    <div>
+      <label for="chat_id">Chat ID:</label><br>
+      <input type="text" id="chat_id">
+    </div>
+    <br>
+
+    <div>
+      <label for="descricao">Descrição do problema:</label><br>
+      <textarea id="descricao" rows="4" cols="50"></textarea>
+    </div>
+    <br>
+
+    <div>
+      <label for="linha_onibus">Linha do ônibus:</label><br>
+      <input type="text" id="linha_onibus">
+    </div>
+    <br>
+
+    <div>
+      <label for="numero_ordem_veiculo">Número de ordem do veículo:</label><br>
+      <input type="text" id="numero_ordem_veiculo">
+    </div>
+    <br>
+
+    <div>
+      <label for="nome_empresa">Nome da empresa:</label><br>
+      <input type="text" id="nome_empresa">
+    </div>
+    <br>
+
+    <div>
+      <label for="local_ocorrencia">Local da ocorrência:</label><br>
+      <input type="text" id="local_ocorrencia">
+    </div>
+    <br>
+
+    <button type="submit">Enviar solicitação</button>
+  </form>
+
+  <h3 id="resultado"></h3>
+
+  <hr>
+
+  <h2>Consultar Protocolo</h2>
+
+  <div>
+    <label for="protocolo">Número do protocolo:</label><br>
+    <input type="text" id="protocolo">
+    <button type="button" onclick="consultarProtocolo()">Consultar</button>
+  </div>
+
+  <pre id="consultaResultado"></pre>
+
+  <script>
+    const form = document.getElementById('formSolicitacao');
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const dados = {
+        intencao: document.getElementById('intencao').value,
+        nome: document.getElementById('nome').value,
+        telefone: document.getElementById('telefone').value,
+        chat_id: document.getElementById('chat_id').value,
+        descricao: document.getElementById('descricao').value,
+        linha_onibus: document.getElementById('linha_onibus').value,
+        numero_ordem_veiculo: document.getElementById('numero_ordem_veiculo').value,
+        nome_empresa: document.getElementById('nome_empresa').value,
+        local_ocorrencia: document.getElementById('local_ocorrencia').value
+      };
+
+      try {
+        const resposta = await fetch('/api/solicitar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dados)
+        });
+
+        const resultado = await resposta.json();
+
+        if (resultado.protocolo) {
+          document.getElementById('resultado').innerText =
+            'Solicitação registrada com sucesso! Protocolo: ' + resultado.protocolo;
+          form.reset();
+        } else {
+          document.getElementById('resultado').innerText =
+            'Ocorreu um erro ao registrar a solicitação.';
+        }
+      } catch (erro) {
+        document.getElementById('resultado').innerText =
+          'Erro de comunicação com o servidor.';
+      }
+    });
+
+    async function consultarProtocolo() {
+      const protocolo = document.getElementById('protocolo').value;
+
+      try {
+        const resposta = await fetch('/api/consultar/' + protocolo);
+        const resultado = await resposta.json();
+
+        document.getElementById('consultaResultado').innerText =
+          JSON.stringify(resultado, null, 2);
+      } catch (erro) {
+        document.getElementById('consultaResultado').innerText =
+          'Erro ao consultar o protocolo.';
+      }
+    }
+  </script>
+</body>
+</html>
