@@ -6,17 +6,16 @@ function gerarProtocolo() {
   return Date.now().toString();
 }
 
-router.post('/solicitar', (req, res) => {
+router.post('/registrar', (req, res) => {
   const {
     intencao,
     nome,
     telefone,
-    chat_id,
+    chatId,
+    endereco,
+    pontoReferencia,
     descricao,
-    linha_onibus,
-    numero_ordem_veiculo,
-    nome_empresa,
-    local_ocorrencia
+    opiniao
   } = req.body;
 
   const protocolo = gerarProtocolo();
@@ -40,12 +39,12 @@ router.post('/solicitar', (req, res) => {
       intencao,
       nome,
       telefone,
-      chat_id,
+      chatId || '',
       descricao,
-      linha_onibus,
-      numero_ordem_veiculo,
-      nome_empresa,
-      local_ocorrencia,
+      '',
+      '',
+      '',
+      `${endereco || ''} | Ponto de referência: ${pontoReferencia || ''} | Observação: ${opiniao || ''}`,
       'Recebido'
     ],
     function (err) {
@@ -75,10 +74,16 @@ router.get('/consultar/:protocolo', (req, res) => {
       }
 
       if (!row) {
-        return res.json({ mensagem: 'Protocolo não encontrado' });
+        return res.status(404).json({ erro: 'Protocolo não encontrado' });
       }
 
-      res.json(row);
+      res.json({
+        protocolo: row.protocolo,
+        status: row.status,
+        intencao: row.intencao,
+        descricao: row.descricao,
+        local_ocorrencia: row.local_ocorrencia
+      });
     }
   );
 });
