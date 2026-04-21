@@ -1,7 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
-const dbPath = path.resolve(__dirname, '../../data/atendimento.db');
+const dataDir = path.resolve(__dirname, '../../data');
+const dbPath = path.join(dataDir, 'atendimento.db');
+
+// Garante que a pasta exista antes de abrir o banco
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
@@ -12,8 +19,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 db.serialize(() => {
-  db.run(`DROP TABLE IF EXISTS registros`);
-
   db.run(`
     CREATE TABLE IF NOT EXISTS registros (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
