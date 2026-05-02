@@ -192,12 +192,14 @@ document.getElementById('formSolicitacao').addEventListener('submit', async (e)=
   e.preventDefault();
 
   const dados = {
-    intencao: intencao.value,
-    nome: nome.value,
-    descricao: descricao.value
-  };
+  origem_canal: "web",
+  intencao_identificada_codigo: intencao.value,
+  nome_cidadao: nome.value,
+  telefone: "81999999999",
+  descricao_problema: descricao.value
+};
 
-  const resposta = await fetch('https://hook.us2.make.com/3w9yeh13s5gsbi83t4bjuc7r4w4z6num', {
+const resposta = await fetch('/api/registros', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(dados)
@@ -208,7 +210,7 @@ const r = await resposta.json();
 if (resposta.ok) {
   mostrarResultado(
     resultadoSolicitacao,
-    'Solicitação enviada ao Make com sucesso.',
+    'Protocolo: ' + r.registro.protocolo,
     'sucesso'
   );
 } else {
