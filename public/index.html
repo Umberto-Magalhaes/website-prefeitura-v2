@@ -181,7 +181,6 @@
 </footer>
 
 <script>
-
 function mostrarResultado(el, msg, tipo){
   el.style.display = 'block';
   el.className = 'resultado ' + tipo;
@@ -192,34 +191,42 @@ document.getElementById('formSolicitacao').addEventListener('submit', async (e)=
   e.preventDefault();
 
   const dados = {
-  origem_canal: "web",
-  intencao_identificada_codigo: intencao.value,
-  nome_cidadao: nome.value,
-  telefone: "81999999999",
-  descricao_problema: descricao.value
-};
+    origem_canal: "web",
+    intencao_identificada_codigo: document.getElementById('intencao').value,
+    nome_cidadao: document.getElementById('nome').value,
+    telefone: "81999999999",
+    descricao_problema: document.getElementById('descricao').value
+  };
 
-const resposta = await fetch('/api/registros', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(dados)
-});
+  try {
+    const resposta = await fetch('/api/registros', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados)
+    });
 
-const r = await resposta.json();
+    const r = await resposta.json();
 
-if (resposta.ok) {
-  mostrarResultado(
-    resultadoSolicitacao,
-    'Protocolo: ' + r.registro.protocolo,
-    'sucesso'
-  );
-} else {
-  mostrarResultado(
-    resultadoSolicitacao,
-    'Erro ao enviar a solicitação.',
-    'erro'
-  );
-}
+    if (resposta.ok) {
+      mostrarResultado(
+        document.getElementById('resultadoSolicitacao'),
+        'Solicitação registrada com sucesso.<br><strong>Protocolo:</strong> ' + r.registro.protocolo,
+        'sucesso'
+      );
+    } else {
+      mostrarResultado(
+        document.getElementById('resultadoSolicitacao'),
+        r.message || 'Erro ao registrar solicitação.',
+        'erro'
+      );
+    }
+  } catch (erro) {
+    mostrarResultado(
+      document.getElementById('resultadoSolicitacao'),
+      'Erro ao conectar com o servidor.',
+      'erro'
+    );
+  }
 });
 
 document.getElementById('formConsulta').addEventListener('submit', async (e)=>{
@@ -227,23 +234,31 @@ document.getElementById('formConsulta').addEventListener('submit', async (e)=>{
 
   const protocolo = document.getElementById('protocolo').value;
 
-  const res = await fetch('/api/consultar/'+protocolo);
-  const r = await res.json();
+  try {
+    const resposta = await fetch('/api/registros/protocolo/' + encodeURIComponent(protocolo));
+    const r = await resposta.json();
 
-  if(res.ok){
-    mostrarResultado(resultadoConsulta,
-      'Status: '+r.status,
-      'sucesso'
-    );
-  } else {
-    mostrarResultado(resultadoConsulta,
-      'Não encontrado',
+    if (resposta.ok) {
+      mostrarResultado(
+        document.getElementById('resultadoConsulta'),
+        '<strong>Protocolo:</strong> ' + r.protocolo + '<br><strong>Status:</strong> ' + r.status_demanda,
+        'sucesso'
+      );
+    } else {
+      mostrarResultado(
+        document.getElementById('resultadoConsulta'),
+        r.message || 'Protocolo não encontrado.',
+        'erro'
+      );
+    }
+  } catch (erro) {
+    mostrarResultado(
+      document.getElementById('resultadoConsulta'),
+      'Erro ao consultar protocolo.',
       'erro'
     );
   }
 });
-
 </script>
-
 </body>
 </html>
