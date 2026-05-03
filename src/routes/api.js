@@ -3,7 +3,7 @@ const db = require("../db/connection");
 
 const router = express.Router();
 
-const WEBHOOK_MAKE_PREFEITURAS = "COLE_AQUI_A_URL_DO_WEBHOOK_PREFEITURAS";
+const WEBHOOK_MAKE_PREFEITURAS = "https://hook.us2.make.com/903cplertvaer2vh3v7qn4o7qrwlx8gn";
 
 function gerarProtocolo() {
   const agora = new Date();
