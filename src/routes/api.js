@@ -18,7 +18,7 @@ const {
 
 const router = express.Router();
 
-const WEBHOOK_MAKE_PREFEITURAS = "https://hook.us2.make.com/903cplertvaer2vh3v7qn4o7qrwlx8gn";
+const WEBHOOK_MAKE_PREFEITURAS = "COLE_AQUI_A_URL_DO_WEBHOOK_PREFEITURAS";
 
 function isBlank(value) {
   return value === undefined || value === null || String(value).trim() === "";
@@ -26,7 +26,7 @@ function isBlank(value) {
 
 async function enviarRegistroParaMake(registro, bodyOriginal, intencao) {
   if (!WEBHOOK_MAKE_PREFEITURAS || WEBHOOK_MAKE_PREFEITURAS.includes("COLE_AQUI")) {
-    console.log("Webhook do Make não configurado. Registro salvo apenas no sistema web.");
+    console.log("Webhook do Make Prefeituras não configurado.");
     return;
   }
 
@@ -39,26 +39,25 @@ async function enviarRegistroParaMake(registro, bodyOriginal, intencao) {
       body: JSON.stringify({
         origem: "web",
         protocolo: registro.protocolo,
-        intencao_identificada: intencao.codigo || intencao.nome_exibicao,
-        nome_cidadao: bodyOriginal.nome_cidadao || "",
+        data_registro: registro.data_registro || new Date().toISOString(),
+
+        intencao_identificada: intencao.codigo || intencao.nome_exibicao || "",
+        servico_solicitado: intencao.nome_exibicao || intencao.codigo || "",
+
+        nome_do_cidadao: bodyOriginal.nome_cidadao || "",
         telefone: bodyOriginal.telefone || "",
-        chat_id: bodyOriginal.chat_id || "",
-        descricao_problema: bodyOriginal.descricao_problema || "",
-        linha_onibus: bodyOriginal.linha_onibus || "",
-        numero_ordem: bodyOriginal.numero_ordem || "",
-        nome_da_empresa: bodyOriginal.nome_da_empresa || "",
-        local_ocorrencia: bodyOriginal.local_ocorrencia || "",
-        data_horario_ocorrencia: bodyOriginal.data_horario_ocorrencia || "",
-        sentido_viagem: bodyOriginal.sentido_viagem || "",
-        endereco: bodyOriginal.endereco || "",
-        ponto_referencia: bodyOriginal.ponto_referencia || "",
-        opiniao_do_cidadao: bodyOriginal.opiniao_do_cidadao || "",
-        status_demanda: registro.status_demanda || "Recebido",
-        data_registro: registro.data_hora_registro || new Date().toISOString()
+        whatsapp: bodyOriginal.chat_id || bodyOriginal.telefone || "",
+
+        endereco_do_servico: bodyOriginal.endereco_servico || bodyOriginal.endereco || "",
+        ponto_de_referencia: bodyOriginal.ponto_referencia || "",
+        descricao_do_problema: bodyOriginal.descricao_problema || "",
+        observacao_do_cidadao: bodyOriginal.observacao_cidadao || bodyOriginal.opiniao_do_cidadao || "",
+
+        status_demanda: registro.status_demanda || "Recebido"
       })
     });
   } catch (error) {
-    console.error("Erro ao enviar registro para o Make:", error.message);
+    console.error("Erro ao enviar registro para o Make Prefeituras:", error.message);
   }
 }
 
@@ -89,7 +88,7 @@ router.post("/registros", async (request, response, next) => {
 
     if (errors.length > 0) {
       response.status(400).json({
-        message: "Não foi possível registrar a ocorrência.",
+        message: "Não foi possível registrar a solicitação.",
         errors
       });
       return;
@@ -102,7 +101,7 @@ router.post("/registros", async (request, response, next) => {
 
       if (!intencao) {
         response.status(400).json({
-          message: "A intenção identificada selecionada é inválida."
+          message: "A solicitação selecionada é inválida."
         });
         return;
       }
@@ -111,7 +110,7 @@ router.post("/registros", async (request, response, next) => {
 
       if (!intencao) {
         response.status(400).json({
-          message: `Não foi encontrada uma intenção ativa para o código "${codigoIntencao}".`
+          message: `Não foi encontrada uma solicitação ativa para o código "${codigoIntencao}".`
         });
         return;
       }
@@ -125,7 +124,7 @@ router.post("/registros", async (request, response, next) => {
     await enviarRegistroParaMake(registro, request.body, intencao);
 
     response.status(201).json({
-      message: `Ocorrência registrada com sucesso. Seu protocolo é ${registro.protocolo}.`,
+      message: `Solicitação registrada com sucesso. Seu protocolo é ${registro.protocolo}.`,
       registro
     });
   } catch (error) {
@@ -139,7 +138,7 @@ router.get("/registros/protocolo/:protocolo", async (request, response, next) =>
 
     if (!registro) {
       response.status(404).json({
-        message: "Nenhuma ocorrência foi encontrada para esse protocolo."
+        message: "Nenhuma solicitação foi encontrada para esse protocolo."
       });
       return;
     }
