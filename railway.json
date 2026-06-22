@@ -1,0 +1,1 @@
+{"build":{"builder":"RAILPACK"},"deploy":{"startCommand":"node server.js"},"variables":{"NODE_VERSION":"20"}} 
