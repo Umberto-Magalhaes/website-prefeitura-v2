@@ -196,18 +196,22 @@
 <hr style="margin:30px 0;">
 <h2>Últimos Protocolos</h2>
 
-<table id="tabelaProtocolos" style="width:100%; border-collapse:collapse;">
-    <thead>
+<table id="tabelaProtocolos" style="
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+">
+    <thead style="background-color: #f1f5f9;">
         <tr>
-            <th style="text-align:left;">Protocolo</th>
-<th style="text-align:left;">Cidadão</th>
-<th style="text-align:left;">Serviço</th>
-<th style="text-align:left;">Descrição</th>
-<th style="text-align:left;">Status</th>
+            <th style="text-align:left; padding:12px; border-bottom:2px solid #cbd5e1;">Protocolo</th>
+            <th style="text-align:left; padding:12px; border-bottom:2px solid #cbd5e1;">Cidadão</th>
+            <th style="text-align:left; padding:12px; border-bottom:2px solid #cbd5e1;">Serviço</th>
+            <th style="text-align:left; padding:12px; border-bottom:2px solid #cbd5e1;">Descrição</th>
+            <th style="text-align:left; padding:12px; border-bottom:2px solid #cbd5e1;">Status</th>
         </tr>
     </thead>
-    <tbody>
 
+    <tbody>
     </tbody>
 </table>
             </div>
@@ -299,11 +303,11 @@ async function carregarProtocolos() {
 
             tbody.innerHTML += `
                 <tr>
-                    <td>${p.protocolo}</td>
-                    <td>${p.nome}</td>
-                    <td>${p.servico}</td>
-                    <td>${p.descricao}</td>
-                    <td>${p.status_atual}</td>
+                    <td style="padding:12px; border-bottom:1px solid #e2e8f0;">${p.protocolo}</td>
+<td style="padding:12px; border-bottom:1px solid #e2e8f0;">${p.nome}</td>
+<td style="padding:12px; border-bottom:1px solid #e2e8f0;">${p.servico}</td>
+<td style="padding:12px; border-bottom:1px solid #e2e8f0;">${p.descricao}</td>
+<td style="padding:12px; border-bottom:1px solid #e2e8f0;">${p.status_atual}</td>
                 </tr>
             `;
 
