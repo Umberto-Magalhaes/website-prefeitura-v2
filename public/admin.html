@@ -200,9 +200,10 @@
     <thead>
         <tr>
             <th style="text-align:left;">Protocolo</th>
-            <th style="text-align:left;">Cidadão</th>
-            <th style="text-align:left;">Descrição</th>
-            <th style="text-align:left;">Status</th>
+<th style="text-align:left;">Cidadão</th>
+<th style="text-align:left;">Serviço</th>
+<th style="text-align:left;">Descrição</th>
+<th style="text-align:left;">Status</th>
         </tr>
     </thead>
     <tbody>
@@ -300,6 +301,7 @@ async function carregarProtocolos() {
                 <tr>
                     <td>${p.protocolo}</td>
                     <td>${p.nome}</td>
+                    <td>${p.servico}</td>
                     <td>${p.descricao}</td>
                     <td>${p.status_atual}</td>
                 </tr>
