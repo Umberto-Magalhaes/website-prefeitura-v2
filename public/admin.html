@@ -131,9 +131,9 @@
 
             <div class="menu">
                 <div>Dashboard</div>
-                <div>Protocolos</div>
-                <div>Atualizar Status</div>
-                <div>Relatórios</div>
+                <div onclick="abrirProtocolos()" style="cursor:pointer;">Protocolos</div>
+                <div onclick="abrirAtualizarStatus()" style="cursor:pointer;">Atualizar Status</div>
+                <div onclick="abrirRelatorios()" style="cursor:pointer;">Relatórios</div>
                 <div>Configurações</div>
             </div>
         </aside>
@@ -214,6 +214,29 @@
     <tbody>
     </tbody>
 </table>
+<hr style="margin:30px 0;">
+
+<div class="box" id="secaoRelatorios">
+    <h2>Relatórios</h2>
+    <p>Área destinada aos relatórios gerenciais da OUVIA.</p>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Total de Protocolos</h3>
+            <strong>Em preparação</strong>
+        </div>
+
+        <div class="card">
+            <h3>Serviços Mais Solicitados</h3>
+            <strong>Em preparação</strong>
+        </div>
+
+        <div class="card">
+            <h3>Status das Demandas</h3>
+            <strong>Em preparação</strong>
+        </div>
+    </div>
+</div>
             </div>
         </main>
 
@@ -368,5 +391,19 @@ await carregarResumoDashboard();
 }
 carregarResumoDashboard();
 carregarProtocolos();
-
+function abrirProtocolos() {
+    document.getElementById("tabelaProtocolos").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+function abrirAtualizarStatus() {
+    document.getElementById("novoStatusInput").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+function abrirRelatorios() {
+    document.getElementById("secaoRelatorios").scrollIntoView({
+        behavior: "smooth"
+    });
+}
 </script>
