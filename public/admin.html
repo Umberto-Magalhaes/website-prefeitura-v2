@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OUVIA - Painel Administrativo</title>
@@ -220,20 +221,54 @@
     <h2>Relatórios</h2>
     <p>Área destinada aos relatórios gerenciais da OUVIA.</p>
 
+    <div style="margin: 20px 0 25px 0;">
+    <label for="filtroPeriodoRelatorio">
+        <strong>Período dos Relatórios:</strong>
+    </label>
+
+    <select id="filtroPeriodoRelatorio">
+        <option value="todos">Todo o período</option>
+        <option value="hoje">Hoje</option>
+        <option value="7dias">Últimos 7 dias</option>
+        <option value="30dias">Últimos 30 dias</option>
+    </select>
+
+    <button onclick="aplicarFiltroRelatorios()">
+        Aplicar Filtro
+    </button>
+</div>
+
     <div class="cards">
         <div class="card">
             <h3>Total de Protocolos</h3>
-            <strong>Em preparação</strong>
+            <strong id="totalProtocolosRelatorio">Em preparação</strong>
         </div>
 
         <div class="card">
             <h3>Serviços Mais Solicitados</h3>
-            <strong>Em preparação</strong>
+            <strong id="servicoMaisSolicitadoRelatorio">Em preparação</strong>
         </div>
 
         <div class="card">
-            <h3>Status das Demandas</h3>
-            <strong>Em preparação</strong>
+    <h3>Status das Demandas</h3>
+    <strong id="statusDemandasRelatorio">Em preparação</strong>
+</div>
+
+<div class="card">
+    <h3>Demandas em Aberto</h3>
+    <strong id="demandasEmAbertoRelatorio">Em preparação</strong>
+</div>
+<div class="card">
+    <h3>Taxa de Resolução</h3>
+    <strong id="taxaResolucaoRelatorio">Em preparação</strong>
+</div>
+<div class="box" style="margin-top: 30px;">
+    <h3>Distribuição das Demandas por Status</h3>
+
+    <div style="max-width: 700px; margin: 0 auto;">
+        <canvas id="graficoDistribuicaoStatus"></canvas>
+    </div>
+</div>
         </div>
     </div>
 </div>
@@ -381,6 +416,7 @@ document.getElementById("protocoloStatusInput").value = "";
 
 await carregarProtocolos();
 await carregarResumoDashboard();
+await carregarRelatorios();
 
     } catch (erro) {
         resultado.innerHTML =
@@ -391,6 +427,83 @@ await carregarResumoDashboard();
 }
 carregarResumoDashboard();
 carregarProtocolos();
+carregarRelatorios();
+
+async function carregarRelatorios() {
+    const periodo = document.getElementById("filtroPeriodoRelatorio").value;
+
+const respostaResumo = await fetch(`/api/dashboard/resumo?periodo=${periodo}`);
+    const dadosResumo = await respostaResumo.json();
+
+    document.getElementById("totalProtocolosRelatorio").innerText =
+        dadosResumo.total_protocolos || "0";
+
+
+    const respostaServico = await fetch(
+    `/api/relatorios/servicos-mais-solicitados?periodo=${periodo}`
+);
+
+    const dadosServico = await respostaServico.json();
+
+    document.getElementById("servicoMaisSolicitadoRelatorio").innerText =
+        `${dadosServico.servico} (${dadosServico.total})`;
+        const respostaStatus = await fetch(
+    `/api/relatorios/status-demandas?periodo=${periodo}`
+);
+
+const dadosStatus = await respostaStatus.json();
+
+document.getElementById("statusDemandasRelatorio").innerText =
+    `${dadosStatus.status} (${dadosStatus.total})`;
+   const respostaAbertas = await fetch(
+    `/api/relatorios/demandas-em-aberto?periodo=${periodo}`
+);
+
+const dadosAbertas = await respostaAbertas.json();
+
+document.getElementById("demandasEmAbertoRelatorio").innerText =
+    dadosAbertas.total || "0";
+    const respostaTaxa = await fetch(
+    `/api/relatorios/taxa-resolucao?periodo=${periodo}`
+);
+
+const dadosTaxa = await respostaTaxa.json();
+
+document.getElementById("taxaResolucaoRelatorio").innerText =
+    `${dadosTaxa.taxa_resolucao}%`;
+    
+    const respostaDistribuicaoStatus = await fetch(
+    `/api/relatorios/distribuicao-status?periodo=${periodo}`
+);
+
+const dadosDistribuicaoStatus = await respostaDistribuicaoStatus.json();
+
+const labelsStatus = dadosDistribuicaoStatus.map(item => item.status);
+const valoresStatus = dadosDistribuicaoStatus.map(item => Number(item.total));
+
+const ctxStatus = document
+    .getElementById("graficoDistribuicaoStatus")
+    .getContext("2d");
+    if (window.graficoDistribuicaoStatusInstance) {
+    window.graficoDistribuicaoStatusInstance.destroy();
+}
+
+window.graficoDistribuicaoStatusInstance = new Chart(ctxStatus, {
+    type: "bar",
+    data: {
+        labels: labelsStatus,
+        datasets: [{
+            label: "Quantidade de Protocolos",
+            data: valoresStatus
+        }]
+    }
+});
+}
+
+function aplicarFiltroRelatorios() {
+    carregarRelatorios();
+}
+
 function abrirProtocolos() {
     document.getElementById("tabelaProtocolos").scrollIntoView({
         behavior: "smooth"

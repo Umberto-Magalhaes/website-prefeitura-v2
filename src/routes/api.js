@@ -172,21 +172,210 @@ LIMIT 20
     }
 });
 router.get("/dashboard/resumo", async (req, res) => {
+    try {
+        const periodo = req.query.periodo || "todos";
+
+        let filtroData = "";
+
+        if (periodo === "hoje") {
+            filtroData = "WHERE DATE(data_abertura) = CURRENT_DATE";
+        } else if (periodo === "7dias") {
+            filtroData = "WHERE data_abertura >= CURRENT_DATE - INTERVAL '6 days'";
+        } else if (periodo === "30dias") {
+            filtroData = "WHERE data_abertura >= CURRENT_DATE - INTERVAL '29 days'";
+        }
+
+        const resultado = await db.query(`
+            SELECT
+                COUNT(*) AS total_protocolos,
+                COUNT(*) FILTER (
+                    WHERE DATE(data_abertura) = CURRENT_DATE
+                ) AS protocolos_hoje,
+                COUNT(*) FILTER (
+                    WHERE UPPER(status_atual) LIKE '%ANÁLISE%'
+                ) AS em_analise,
+                COUNT(*) FILTER (
+                    WHERE UPPER(status_atual) LIKE '%EXECUÇÃO%'
+                ) AS em_execucao,
+                COUNT(*) FILTER (
+                    WHERE UPPER(status_atual) LIKE '%CONCLU%'
+                ) AS concluidos
+            FROM protocolos
+            ${filtroData}
+        `);
+
+        res.json(resultado.rows[0]);
+
+    } catch (error) {
+        console.error("Erro ao carregar resumo do dashboard:", error.message);
+
+        res.status(500).json({
+            message: "Erro ao carregar resumo do dashboard.",
+            error: error.message
+        });
+    }
+});
+
+    
+router.get("/relatorios/servicos-mais-solicitados", async (req, res) => {
+    try {
+        const periodo = req.query.periodo || "todos";
+
+        let filtroData = "";
+
+        if (periodo === "hoje") {
+            filtroData = "WHERE DATE(p.data_abertura) = CURRENT_DATE";
+        } else if (periodo === "7dias") {
+            filtroData = "WHERE p.data_abertura >= CURRENT_DATE - INTERVAL '6 days'";
+        } else if (periodo === "30dias") {
+            filtroData = "WHERE p.data_abertura >= CURRENT_DATE - INTERVAL '29 days'";
+        }
+
+        const resultado = await db.query(`
+            SELECT
+                i.nome AS servico,
+                COUNT(*) AS total
+            FROM protocolos p
+            LEFT JOIN intencoes i
+                ON p.intencao_id = i.id
+            ${filtroData}
+            GROUP BY i.nome
+            ORDER BY total DESC
+            LIMIT 1
+        `);
+
+        res.json(resultado.rows[0] || {
+            servico: "Nenhum serviço registrado",
+            total: "0"
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar serviço mais solicitado:", error.message);
+
+        res.status(500).json({
+            message: "Erro ao carregar serviço mais solicitado.",
+            error: error.message
+        });
+    }
+});
+
+router.get("/relatorios/status-demandas", async (req, res) => {
+    try {
+        const periodo = req.query.periodo || "todos";
+
+        let filtroData = "";
+
+        if (periodo === "hoje") {
+            filtroData = "WHERE DATE(data_abertura) = CURRENT_DATE";
+        } else if (periodo === "7dias") {
+            filtroData = "WHERE data_abertura >= CURRENT_DATE - INTERVAL '6 days'";
+        } else if (periodo === "30dias") {
+            filtroData = "WHERE data_abertura >= CURRENT_DATE - INTERVAL '29 days'";
+        }
+
+        const resultado = await db.query(`
+            SELECT
+                status_atual AS status,
+                COUNT(*) AS total
+            FROM protocolos
+            ${filtroData}
+            GROUP BY status_atual
+            ORDER BY total DESC
+            LIMIT 1
+        `);
+
+        res.json(resultado.rows[0] || {
+            status: "Nenhum status registrado",
+            total: "0"
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar status das demandas:", error.message);
+
+        res.status(500).json({
+            message: "Erro ao carregar status das demandas.",
+            error: error.message
+        });
+    }
+});
+
+router.get("/relatorios/demandas-em-aberto", async (req, res) => {
+    try {
+        const periodo = req.query.periodo || "todos";
+
+        let filtroData = "";
+
+        if (periodo === "hoje") {
+            filtroData = "AND DATE(data_abertura) = CURRENT_DATE";
+        } else if (periodo === "7dias") {
+            filtroData = "AND data_abertura >= CURRENT_DATE - INTERVAL '6 days'";
+        } else if (periodo === "30dias") {
+            filtroData = "AND data_abertura >= CURRENT_DATE - INTERVAL '29 days'";
+        }
+
+        const resultado = await db.query(`
+            SELECT
+                COUNT(*) AS total
+            FROM protocolos
+            WHERE UPPER(status_atual) NOT LIKE '%CONCLUÍDO%'
+            ${filtroData}
+        `);
+
+        res.json(resultado.rows[0] || {
+            total: "0"
+        });
+
+    } catch (error) {
+        console.error("Erro ao carregar demandas em aberto:", error.message);
+
+        res.status(500).json({
+            message: "Erro ao carregar demandas em aberto.",
+            error: error.message
+        });
+    }
+});
+router.get("/relatorios/taxa-resolucao", async (req, res) => {
   try {
+    const periodo = req.query.periodo || "todos";
+
+    let filtroData = "";
+
+    if (periodo === "hoje") {
+      filtroData = "WHERE DATE(data_abertura) = CURRENT_DATE";
+    } else if (periodo === "7dias") {
+      filtroData =
+        "WHERE data_abertura >= CURRENT_DATE - INTERVAL '6 days'";
+    } else if (periodo === "30dias") {
+      filtroData =
+        "WHERE data_abertura >= CURRENT_DATE - INTERVAL '29 days'";
+    }
+
     const resultado = await db.query(`
       SELECT
-        COUNT(*) FILTER (WHERE DATE(data_abertura) = CURRENT_DATE) AS protocolos_hoje,
-        COUNT(*) FILTER (WHERE UPPER(status_atual) LIKE '%ANÁLISE%') AS em_analise,
-        COUNT(*) FILTER (WHERE UPPER(status_atual) LIKE '%EXECUÇÃO%') AS em_execucao,
-        COUNT(*) FILTER (WHERE UPPER(status_atual) LIKE '%CONCLU%') AS concluidos
+        COUNT(*) AS total_protocolos,
+        COUNT(*) FILTER (
+          WHERE UPPER(status_atual) LIKE '%CONCLUÍDO%'
+        ) AS concluidos
       FROM protocolos
+      ${filtroData}
     `);
 
-    res.json(resultado.rows[0]);
+    const total = Number(resultado.rows[0].total_protocolos || 0);
+    const concluidos = Number(resultado.rows[0].concluidos || 0);
+
+    const taxa = total > 0
+      ? Math.round((concluidos / total) * 100)
+      : 0;
+
+    res.json({
+      taxa_resolucao: taxa
+    });
+
   } catch (error) {
-    console.error("Erro ao carregar resumo do dashboard:", error.message);
+    console.error("Erro ao calcular taxa de resolução:", error.message);
+
     res.status(500).json({
-      message: "Erro ao carregar resumo do dashboard.",
+      message: "Erro ao calcular taxa de resolução.",
       error: error.message
     });
   }
@@ -202,17 +391,23 @@ router.put("/protocolos/:protocolo/status", async (req, res) => {
             });
         }
 
-        const resultado = await db.query(
-            `
-            UPDATE protocolos
-            SET status_atual = $1
-            WHERE numero_protocolo = $2
-            RETURNING
-                numero_protocolo AS protocolo,
-                status_atual
-            `,
-            [status_atual, protocolo]
-        );
+       const resultado = await db.query(
+    `
+    UPDATE protocolos
+    SET
+        status_atual = $1::text,
+        data_encerramento = CASE
+            WHEN UPPER($1::text) LIKE '%CONCLUÍDO%' THEN CURRENT_TIMESTAMP
+            ELSE NULL
+        END
+    WHERE numero_protocolo = $2
+    RETURNING
+        numero_protocolo AS protocolo,
+        status_atual,
+        data_encerramento
+    `,
+    [status_atual, protocolo]
+);
 
         if (resultado.rowCount === 0) {
             return res.status(404).json({
@@ -234,4 +429,40 @@ router.put("/protocolos/:protocolo/status", async (req, res) => {
         });
     }
 });
-module.exports = router;
+router.get("/relatorios/distribuicao-status", async (req, res) => {
+    try {
+        const periodo = req.query.periodo || "todos";
+
+        let filtroData = "";
+
+        if (periodo === "hoje") {
+            filtroData = "WHERE DATE(data_abertura) = CURRENT_DATE";
+        } else if (periodo === "7dias") {
+            filtroData = "WHERE data_abertura >= CURRENT_DATE - INTERVAL '6 days'";
+        } else if (periodo === "30dias") {
+            filtroData = "WHERE data_abertura >= CURRENT_DATE - INTERVAL '29 days'";
+        }
+
+        const resultado = await db.query(`
+            SELECT
+                status_atual AS status,
+                COUNT(*) AS total
+            FROM protocolos
+            ${filtroData}
+            GROUP BY status_atual
+            ORDER BY total DESC
+        `);
+
+        res.json(resultado.rows);
+
+    } catch (error) {
+        console.error("Erro ao carregar distribuição por status:", error.message);
+
+        res.status(500).json({
+            message: "Erro ao carregar distribuição por status.",
+            error: error.message
+        });
+    }
+});
+    
+   module.exports = router;
