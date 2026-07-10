@@ -173,6 +173,18 @@ LIMIT 20
 });
 router.get("/dashboard/resumo", async (req, res) => {
     try {
+        const diagnostico = await db.query(`
+    SELECT
+        current_database() AS banco,
+        current_user AS usuario,
+        current_schema() AS schema_atual,
+        current_setting('search_path') AS search_path,
+        inet_server_addr() AS servidor,
+        inet_server_port() AS porta,
+        to_regclass('public.protocolos') AS tabela_protocolos
+`);
+
+console.log("DIAGNOSTICO BANCO:", diagnostico.rows[0]);
         const periodo = req.query.periodo || "todos";
 
         let filtroData = "";
