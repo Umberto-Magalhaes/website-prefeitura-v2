@@ -241,7 +241,7 @@ document.getElementById('formConsulta').addEventListener('submit', async (e)=>{
     if (resposta.ok) {
       mostrarResultado(
         document.getElementById('resultadoConsulta'),
-        '<strong>Protocolo:</strong> ' + r.protocolo + '<br><strong>Status:</strong> ' + r.status_demanda,
+        '<strong>Protocolo:</strong> ' + r.protocolo + '<br><strong>Status:</strong> ' + r.status_atual,
         'sucesso'
       );
     } else {
