@@ -13,7 +13,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, '../public')));
 app.use('/api', apiRoutes);
-// app.use('/admin', adminRoutes);
+app.use('/admin', adminRoutes);
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../public/index.html'));
 });

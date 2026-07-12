@@ -152,6 +152,11 @@
     </div>
 
     <div class="card">
+    <h3>Tempo Médio de Atendimento</h3>
+    <strong id="tempoMedioAtendimento">--</strong>
+</div>
+
+    <div class="card">
         <h3>Em Análise</h3>
         <strong id="emAnalise">0</strong>
     </div>
@@ -165,7 +170,8 @@
         <h3>Concluídos</h3>
         <strong id="concluidos">0</strong>
     </div>
-</div>
+
+   
             
             <div class="box">
                 <h2>Consultar Protocolo</h2>
@@ -337,6 +343,17 @@ async function carregarResumoDashboard() {
         document.getElementById("emAnalise").innerText = dados.em_analise || 0;
         document.getElementById("emExecucao").innerText = dados.em_execucao || 0;
         document.getElementById("concluidos").innerText = dados.concluidos || 0;
+        const respostaTempoMedio = await fetch("/admin/tempo-medio-atendimento");
+const dadosTempoMedio = await respostaTempoMedio.json();
+
+if (dadosTempoMedio.sucesso) {
+    const valor = Number(dadosTempoMedio.dados.tempo_medio_em_dias);
+
+    document.getElementById("tempoMedioAtendimento").innerText =
+        Number.isFinite(valor)
+            ? valor.toFixed(2).replace(".", ",") + " dias"
+            : "--";
+}
 
     } catch (erro) {
 
