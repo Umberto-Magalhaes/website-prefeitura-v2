@@ -44,5 +44,37 @@ router.get("/tempo-medio-atendimento", async (req, res) => {
         });
     }
 });
+router.get("/tempo-medio-demandas-abertas", async (req, res) => {
+    try {
+        const resultado = await pool.query(`
+            SELECT
+                COUNT(*)::int AS demandas_em_aberto,
+                ROUND(
+                    AVG(
+                        EXTRACT(EPOCH FROM (NOW() - data_abertura))
+                        / 86400
+                    ),
+                    2
+                ) AS tempo_medio_em_dias
+            FROM protocolos
+            WHERE data_encerramento IS NULL
+        `);
 
+        res.json({
+            sucesso: true,
+            dados: resultado.rows[0]
+        });
+
+    } catch (erro) {
+        console.error(
+            "Erro ao calcular tempo médio das demandas em aberto:",
+            erro
+        );
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao calcular tempo médio das demandas em aberto."
+        });
+    }
+});
 module.exports = router;

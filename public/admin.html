@@ -156,6 +156,11 @@
     <strong id="tempoMedioAtendimento">--</strong>
 </div>
 
+<div class="card">
+    <h3>Tempo Médio das Demandas em Aberto</h3>
+    <strong id="tempoMedioDemandasAbertas">--</strong>
+</div>
+
     <div class="card">
         <h3>Em Análise</h3>
         <strong id="emAnalise">0</strong>
@@ -170,9 +175,7 @@
         <h3>Concluídos</h3>
         <strong id="concluidos">0</strong>
     </div>
-
-   
-            
+         
             <div class="box">
                 <h2>Consultar Protocolo</h2>
                 <label>Número do protocolo</label>
@@ -355,6 +358,17 @@ if (dadosTempoMedio.sucesso) {
             : "--";
 }
 
+const respostaDemandasAbertas = await fetch("/admin/tempo-medio-demandas-abertas");
+const dadosDemandasAbertas = await respostaDemandasAbertas.json();
+
+if (dadosDemandasAbertas.sucesso) {
+    const valorAberto = Number(dadosDemandasAbertas.dados.tempo_medio_em_dias);
+
+    document.getElementById("tempoMedioDemandasAbertas").innerText =
+        Number.isFinite(valorAberto)
+            ? valorAberto.toFixed(2).replace(".", ",") + " dias"
+            : "--";
+}
     } catch (erro) {
 
         console.error("Erro ao carregar dashboard:", erro);
