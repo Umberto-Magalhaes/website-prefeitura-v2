@@ -77,4 +77,44 @@ router.get("/tempo-medio-demandas-abertas", async (req, res) => {
         });
     }
 });
+
+router.get("/tempo-medio-atendimento-por-servico", async (req, res) => {
+    try {
+        const resultado = await pool.query(`
+            SELECT
+                i.nome AS servico,
+                COUNT(*)::int AS protocolos_concluidos,
+                ROUND(
+                    AVG(
+                        EXTRACT(EPOCH FROM (p.data_encerramento - p.data_abertura))
+                        / 86400
+                    ),
+                    2
+                ) AS tempo_medio_em_dias
+            FROM protocolos p
+            JOIN intencoes i
+                ON i.id = p.intencao_id
+            WHERE p.data_encerramento IS NOT NULL
+              AND UPPER(p.status_atual) LIKE 'CONCLU%'
+            GROUP BY i.id, i.nome
+            ORDER BY tempo_medio_em_dias DESC
+        `);
+
+        res.json({
+            sucesso: true,
+            dados: resultado.rows
+        });
+
+    } catch (erro) {
+        console.error(
+            "Erro ao calcular tempo médio de atendimento por serviço:",
+            erro
+        );
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao calcular tempo médio de atendimento por serviço."
+        });
+    }
+});
 module.exports = router;
