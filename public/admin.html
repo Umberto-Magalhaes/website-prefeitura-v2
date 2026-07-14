@@ -278,6 +278,31 @@
         <canvas id="graficoDistribuicaoStatus"></canvas>
     </div>
 </div>
+<div class="box" style="margin-top: 30px;">
+    <h2>Desempenho por Serviço</h2>
+
+    <p>
+        Tempo médio de atendimento das demandas concluídas,
+        organizado por tipo de serviço.
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Serviço</th>
+                <th>Protocolos Concluídos</th>
+                <th>Tempo Médio de Atendimento</th>
+            </tr>
+        </thead>
+
+        <tbody id="tabelaTempoMedioPorServico">
+            <tr>
+                <td colspan="3">Carregando dados...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
         </div>
     </div>
 </div>
@@ -358,6 +383,7 @@ if (dadosTempoMedio.sucesso) {
             : "--";
 }
 
+
 const respostaDemandasAbertas = await fetch("/admin/tempo-medio-demandas-abertas");
 const dadosDemandasAbertas = await respostaDemandasAbertas.json();
 
@@ -377,6 +403,51 @@ if (dadosDemandasAbertas.sucesso) {
 
 }
 
+async function carregarTempoMedioPorServico() {
+    try {
+        const resposta = await fetch("/admin/tempo-medio-atendimento-por-servico");
+        const resultado = await resposta.json();
+
+        const tabela = document.getElementById("tabelaTempoMedioPorServico");
+
+        if (!resultado.sucesso || !Array.isArray(resultado.dados)) {
+            tabela.innerHTML = `
+                <tr>
+                    <td colspan="3">Não foi possível carregar os dados.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        if (resultado.dados.length === 0) {
+            tabela.innerHTML = `
+                <tr>
+                    <td colspan="3">Nenhum serviço concluído encontrado.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        tabela.innerHTML = resultado.dados.map(item => `
+            <tr>
+                <td>${item.servico}</td>
+                <td>${item.protocolos_concluidos}</td>
+                <td>${Number(item.tempo_medio_em_dias).toFixed(2).replace(".", ",")} dias</td>
+            </tr>
+        `).join("");
+
+    } catch (erro) {
+        console.error("Erro ao carregar tempo médio por serviço:", erro);
+
+        const tabela = document.getElementById("tabelaTempoMedioPorServico");
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="3">Erro ao carregar os dados.</td>
+            </tr>
+        `;
+    }
+}
 async function carregarProtocolos() {
 
     try {
@@ -457,6 +528,7 @@ await carregarRelatorios();
     }
 }
 carregarResumoDashboard();
+carregarTempoMedioPorServico();
 carregarProtocolos();
 carregarRelatorios();
 
