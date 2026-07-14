@@ -80,10 +80,31 @@ router.get("/tempo-medio-demandas-abertas", async (req, res) => {
 
 router.get("/tempo-medio-atendimento-por-servico", async (req, res) => {
     try {
+        const periodo = req.query.periodo || "todos";
+
+        let filtroPeriodo = "";
+
+        if (periodo === "hoje") {
+            filtroPeriodo = `
+                AND p.data_abertura >= CURRENT_DATE
+                AND p.data_abertura < CURRENT_DATE + INTERVAL '1 day'
+            `;
+        } else if (periodo === "7dias") {
+            filtroPeriodo = `
+                AND p.data_abertura >= CURRENT_DATE - INTERVAL '6 days'
+                AND p.data_abertura < CURRENT_DATE + INTERVAL '1 day'
+            `;
+        } else if (periodo === "30dias") {
+            filtroPeriodo = `
+                AND p.data_abertura >= CURRENT_DATE - INTERVAL '29 days'
+                AND p.data_abertura < CURRENT_DATE + INTERVAL '1 day'
+            `;
+        }
+
         const resultado = await pool.query(`
             SELECT
                 i.nome AS servico,
-                COUNT(*)::int AS protocolos_concluidos,
+                COUNT(*) AS protocolos_concluidos,
                 ROUND(
                     AVG(
                         EXTRACT(EPOCH FROM (p.data_encerramento - p.data_abertura))
@@ -95,7 +116,8 @@ router.get("/tempo-medio-atendimento-por-servico", async (req, res) => {
             JOIN intencoes i
                 ON i.id = p.intencao_id
             WHERE p.data_encerramento IS NOT NULL
-              AND UPPER(p.status_atual) LIKE 'CONCLU%'
+                AND UPPER(p.status_atual) LIKE 'CONCLU%'
+                ${filtroPeriodo}
             GROUP BY i.id, i.nome
             ORDER BY tempo_medio_em_dias DESC
         `);
@@ -117,4 +139,6 @@ router.get("/tempo-medio-atendimento-por-servico", async (req, res) => {
         });
     }
 });
+
+    
 module.exports = router;

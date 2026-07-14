@@ -405,8 +405,9 @@ if (dadosDemandasAbertas.sucesso) {
 
 async function carregarTempoMedioPorServico() {
     try {
-        const resposta = await fetch("/admin/tempo-medio-atendimento-por-servico");
-        const resultado = await resposta.json();
+        const periodo = document.getElementById("filtroPeriodoRelatorio").value;
+const resposta = await fetch(`/admin/tempo-medio-atendimento-por-servico?periodo=${periodo}`);
+               const resultado = await resposta.json();
 
         const tabela = document.getElementById("tabelaTempoMedioPorServico");
 
@@ -601,6 +602,8 @@ window.graficoDistribuicaoStatusInstance = new Chart(ctxStatus, {
         }]
     }
 });
+await carregarTempoMedioPorServico();
+
 }
 
 function aplicarFiltroRelatorios() {
