@@ -78,10 +78,11 @@
         }
 
         .card h3 {
-            margin: 0;
-            font-size: 15px;
-            color: #6b7280;
-        }
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: #475569;
+}
 
         .card strong {
             display: block;
@@ -105,6 +106,24 @@
             border-radius: 8px;
             font-size: 16px;
         }
+
+        select {
+    width: 100%;        
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 16px;
+    background: white;
+    min-height: 44px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #334155;
+}
 
         button {
             margin-top: 15px;
@@ -141,12 +160,45 @@
 
         <main class="content">
             <div class="topo">
-                <h1>Painel Administrativo</h1>
-                <p>Ambiente de gestão das solicitações registradas pelos cidadãos.</p>
-            </div>
+                <h1>Central de Inteligência da OUVIA</h1>
 
-            <div class="cards">
-    <div class="card">
+<p>
+Painel executivo para monitoramento, análise e apoio à tomada de decisões da administração pública.
+</p>
+            </div>
+<div class="diagnostico-executivo">
+
+    <h2>🧠 Diagnóstico Executivo</h2>
+
+    <div id="diagnosticoExecutivo">
+
+        <p><strong>Situação Geral:</strong></p>
+        <p id="situacaoGeral">
+            Carregando diagnóstico...
+        </p>
+
+        <hr>
+
+        <p><strong>Principal Atenção</strong></p>
+        <p id="principalAtencao"></p>
+
+        <p><strong>Serviço Crítico</strong></p>
+        <p id="servicoCritico"></p>
+
+        <p><strong>Recomendação</strong></p>
+        <p id="recomendacao"></p>
+
+        <hr>
+
+        <p id="mensagemFinal"></p>
+
+    </div>
+
+</div>
+  
+<div class="cards">
+        
+                    <div class="card">
         <h3>Protocolos Hoje</h3>
         <strong id="protocolosHoje">0</strong>
     </div>
@@ -175,7 +227,8 @@
         <h3>Concluídos</h3>
         <strong id="concluidos">0</strong>
     </div>
-         
+    </div>
+
             <div class="box">
                 <h2>Consultar Protocolo</h2>
                 <label>Número do protocolo</label>
@@ -224,11 +277,14 @@
     <tbody>
     </tbody>
 </table>
-<hr style="margin:30px 0;">
 
 <div class="box" id="secaoRelatorios">
     <h2>Relatórios</h2>
     <p>Área destinada aos relatórios gerenciais da OUVIA.</p>
+
+<hr style="margin:30px 0;">
+
+
 
     <div style="margin: 20px 0 25px 0;">
     <label for="filtroPeriodoRelatorio">
@@ -260,7 +316,7 @@
 
         <div class="card">
     <h3>Status das Demandas</h3>
-    <strong id="statusDemandasRelatorio">Em preparação</strong>
+    <div id="statusDemandasRelatorio">Em preparação</div>
 </div>
 
 <div class="card">
@@ -301,17 +357,182 @@
             </tr>
         </tbody>
     </table>
+
+    <div class="box" style="margin-top: 30px;">
+    <h2>Demandas Pendentes por Tempo de Espera</h2>
+
+    <p>
+        Distribuição das demandas ainda não concluídas,
+        conforme o tempo decorrido desde a abertura.
+    </p>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Até 7 dias</h3>
+            <strong id="pendentesAte7Dias">0</strong>
+        </div>
+
+        <div class="card">
+            <h3>De 8 a 15 dias</h3>
+            <strong id="pendentesDe8A15Dias">0</strong>
+        </div>
+
+        <div class="card">
+            <h3>De 16 a 30 dias</h3>
+            <strong id="pendentesDe16A30Dias">0</strong>
+        </div>
+
+        <div class="card">
+            <h3>Acima de 30 dias</h3>
+            <strong id="pendentesAcimaDe30Dias">0</strong>
+        </div>
+    </div>
+</div>
 </div>
 
         </div>
     </div>
 </div>
-            </div>
+<div class="box" style="margin-top:30px;">
+
+    <h2>Demandas Atrasadas por Serviço</h2>
+
+    <p>
+        Ranking dos serviços com maior quantidade de demandas abertas
+        há mais de 7 dias.
+    </p>
+
+    <table class="tabela-relatorios">
+
+        <thead>
+            <tr>
+                <th>Serviço</th>
+                <th>Demandas atrasadas</th>
+                <th>Tempo médio (dias)</th>
+            </tr>
+        </thead>
+
+        <tbody id="tabelaDemandasAtrasadas">
+
+            <tr>
+                <td colspan="3" style="text-align:center;">
+                    Carregando...
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>        
+</div>
         </main>
 
     </div>
 
     <script>
+
+function obterStatusIndicador(dias) {
+    const valor = Number(dias);
+
+    if (!Number.isFinite(valor)) {
+        return {
+            icone: "⚪",
+            texto: "Sem dados",
+            classe: "status-sem-dados"
+        };
+    }
+
+    if (valor <= 7) {
+        return {
+            icone: "🟢",
+            texto: "Situação excelente",
+            classe: "status-excelente"
+        };
+    }
+
+    if (valor <= 15) {
+        return {
+            icone: "🟡",
+            texto: "Atenção",
+            classe: "status-atencao"
+        };
+    }
+
+    if (valor <= 30) {
+        return {
+            icone: "🟠",
+            texto: "Necessita intervenção",
+            classe: "status-alerta"
+        };
+    }
+
+    return {
+        icone: "🔴",
+        texto: "Situação crítica",
+        classe: "status-critico"
+    };
+}
+
+function obterIndicadorQuantidade(valor, tipo) {
+
+    valor = Number(valor);
+
+    switch (tipo) {
+
+        case "protocolos":
+
+            if (valor === 0)
+                return { icone: "🟢", texto: "Sem registros hoje" };
+
+            if (valor <= 10)
+                return { icone: "🟢", texto: "Fluxo normal" };
+
+            if (valor <= 30)
+                return { icone: "🟡", texto: "Movimento elevado" };
+
+            return { icone: "🟠", texto: "Alta demanda" };
+
+
+        case "analise":
+
+            if (valor <= 3)
+                return { icone: "🟢", texto: "Em dia" };
+
+            if (valor <= 8)
+                return { icone: "🟡", texto: "Acompanhar" };
+
+            return { icone: "🟠", texto: "Acúmulo de análise" };
+
+
+        case "execucao":
+
+            if (valor <= 5)
+                return { icone: "🟢", texto: "Execução normal" };
+
+            if (valor <= 15)
+                return { icone: "🟡", texto: "Volume elevado" };
+
+            return { icone: "🔴", texto: "Necessita reforço" };
+
+
+        case "concluidos":
+
+            if (valor === 0)
+                return { icone: "⚪", texto: "Nenhuma conclusão" };
+
+            if (valor <= 5)
+                return { icone: "🟢", texto: "Boa produtividade" };
+
+            if (valor <= 20)
+                return { icone: "🟢", texto: "Excelente produtividade" };
+
+            return { icone: "🏆", texto: "Desempenho excepcional" };
+
+    }
+
+}
+
 
 async function consultarProtocolo() {
 
@@ -367,20 +588,114 @@ async function carregarResumoDashboard() {
         const resposta = await fetch("/api/dashboard/resumo");
         const dados = await resposta.json();
 
-        document.getElementById("protocolosHoje").innerText = dados.protocolos_hoje || 0;
-        document.getElementById("emAnalise").innerText = dados.em_analise || 0;
-        document.getElementById("emExecucao").innerText = dados.em_execucao || 0;
-        document.getElementById("concluidos").innerText = dados.concluidos || 0;
+        const totalProtocolosHoje = Number(dados.protocolos_hoje || 0);
+const totalEmAnalise = Number(dados.em_analise || 0);
+const totalEmExecucao = Number(dados.em_execucao || 0);
+const totalConcluidos = Number(dados.concluidos || 0);
+
+const indicadorProtocolos = obterIndicadorQuantidade(
+    totalProtocolosHoje,
+    "protocolos"
+);
+
+const indicadorAnalise = obterIndicadorQuantidade(
+    totalEmAnalise,
+    "analise"
+);
+
+const indicadorExecucao = obterIndicadorQuantidade(
+    totalEmExecucao,
+    "execucao"
+);
+
+const indicadorConcluidos = obterIndicadorQuantidade(
+    totalConcluidos,
+    "concluidos"
+);
+
+document.getElementById("protocolosHoje").innerHTML = `
+    <div style="font-size: 24px; margin-bottom: 4px;">
+        ${indicadorProtocolos.icone}
+    </div>
+
+    <div style="font-size: 24px; font-weight: 700;">
+        ${totalProtocolosHoje}
+    </div>
+
+    <div style="font-size: 12px; margin-top: 5px; font-weight: 600;">
+        ${indicadorProtocolos.texto}
+    </div>
+`;
+
+document.getElementById("emAnalise").innerHTML = `
+    <div style="font-size: 24px; margin-bottom: 4px;">
+        ${indicadorAnalise.icone}
+    </div>
+
+    <div style="font-size: 24px; font-weight: 700;">
+        ${totalEmAnalise}
+    </div>
+
+    <div style="font-size: 12px; margin-top: 5px; font-weight: 600;">
+        ${indicadorAnalise.texto}
+    </div>
+`;
+
+document.getElementById("emExecucao").innerHTML = `
+    <div style="font-size: 24px; margin-bottom: 4px;">
+        ${indicadorExecucao.icone}
+    </div>
+
+    <div style="font-size: 24px; font-weight: 700;">
+        ${totalEmExecucao}
+    </div>
+
+    <div style="font-size: 12px; margin-top: 5px; font-weight: 600;">
+        ${indicadorExecucao.texto}
+    </div>
+`;
+
+document.getElementById("concluidos").innerHTML = `
+    <div style="font-size: 24px; margin-bottom: 4px;">
+        ${indicadorConcluidos.icone}
+    </div>
+
+    <div style="font-size: 24px; font-weight: 700;">
+        ${totalConcluidos}
+    </div>
+
+    <div style="font-size: 12px; margin-top: 5px; font-weight: 600;">
+        ${indicadorConcluidos.texto}
+    </div>
+`;
+
         const respostaTempoMedio = await fetch("/admin/tempo-medio-atendimento");
 const dadosTempoMedio = await respostaTempoMedio.json();
 
 if (dadosTempoMedio.sucesso) {
     const valor = Number(dadosTempoMedio.dados.tempo_medio_em_dias);
 
-    document.getElementById("tempoMedioAtendimento").innerText =
-        Number.isFinite(valor)
-            ? valor.toFixed(2).replace(".", ",") + " dias"
-            : "--";
+   const status = obterStatusIndicador(valor);
+
+document.getElementById("tempoMedioAtendimento").innerHTML =
+    Number.isFinite(valor)
+        ? `
+            <div style="font-size: 28px; margin-bottom: 6px;">
+                ${status.icone}
+            </div>
+
+            <div style="font-size: 24px; font-weight: 700;">
+                ${valor.toFixed(2).replace(".", ",")} dias
+            </div>
+
+            <div style="font-size: 13px; margin-top: 6px; font-weight: 600;">
+                ${status.texto}
+            </div>
+        `
+        : `
+            <div style="font-size: 28px;">⚪</div>
+            <div>Sem dados</div>
+        `;
 }
 
 
@@ -388,12 +703,31 @@ const respostaDemandasAbertas = await fetch("/admin/tempo-medio-demandas-abertas
 const dadosDemandasAbertas = await respostaDemandasAbertas.json();
 
 if (dadosDemandasAbertas.sucesso) {
-    const valorAberto = Number(dadosDemandasAbertas.dados.tempo_medio_em_dias);
+    const valorAberto = Number(
+        dadosDemandasAbertas.dados.tempo_medio_em_dias
+    );
 
-    document.getElementById("tempoMedioDemandasAbertas").innerText =
+    const statusAberto = obterStatusIndicador(valorAberto);
+
+    document.getElementById("tempoMedioDemandasAbertas").innerHTML =
         Number.isFinite(valorAberto)
-            ? valorAberto.toFixed(2).replace(".", ",") + " dias"
-            : "--";
+            ? `
+                <div style="font-size: 28px; margin-bottom: 6px;">
+                    ${statusAberto.icone}
+                </div>
+
+                <div style="font-size: 24px; font-weight: 700;">
+                    ${valorAberto.toFixed(2).replace(".", ",")} dias
+                </div>
+
+                <div style="font-size: 13px; margin-top: 6px; font-weight: 600;">
+                    ${statusAberto.texto}
+                </div>
+            `
+            : `
+                <div style="font-size: 28px;">⚪</div>
+                <div>Sem dados</div>
+            `;
 }
     } catch (erro) {
 
@@ -449,6 +783,45 @@ const resposta = await fetch(`/admin/tempo-medio-atendimento-por-servico?periodo
         `;
     }
 }
+
+async function carregarDemandasPendentesPorTempo() {
+    try {
+        const periodo = document.getElementById("filtroPeriodoRelatorio").value;
+
+        const resposta = await fetch(
+            `/admin/demandas-pendentes-por-tempo?periodo=${periodo}`
+        );
+
+        const resultado = await resposta.json();
+
+        if (!resultado.sucesso || !resultado.dados) {
+            throw new Error("Resposta inválida ao carregar demandas pendentes.");
+        }
+
+        document.getElementById("pendentesAte7Dias").innerText =
+            resultado.dados.ate_7_dias ?? 0;
+
+        document.getElementById("pendentesDe8A15Dias").innerText =
+            resultado.dados.de_8_a_15_dias ?? 0;
+
+        document.getElementById("pendentesDe16A30Dias").innerText =
+            resultado.dados.de_16_a_30_dias ?? 0;
+
+        document.getElementById("pendentesAcimaDe30Dias").innerText =
+            resultado.dados.acima_de_30_dias ?? 0;
+
+    } catch (erro) {
+        console.error(
+            "Erro ao carregar demandas pendentes por tempo:",
+            erro
+        );
+
+        document.getElementById("pendentesAte7Dias").innerText = "--";
+        document.getElementById("pendentesDe8A15Dias").innerText = "--";
+        document.getElementById("pendentesDe16A30Dias").innerText = "--";
+        document.getElementById("pendentesAcimaDe30Dias").innerText = "--";
+    }
+}
 async function carregarProtocolos() {
 
     try {
@@ -458,7 +831,8 @@ async function carregarProtocolos() {
 
         const tbody = document.querySelector("#tabelaProtocolos tbody");
 
-        tbody.innerHTML = "";
+                        
+      tbody.innerHTML = "";
 
         protocolos.forEach((p) => {
 
@@ -532,6 +906,129 @@ carregarResumoDashboard();
 carregarTempoMedioPorServico();
 carregarProtocolos();
 carregarRelatorios();
+carregarDemandasAtrasadasPorServico();
+carregarDiagnosticoExecutivo();
+
+async function carregarDiagnosticoExecutivo() {
+
+    try {
+
+        const resposta = await fetch(
+            "/api/admin/diagnostico-executivo"
+        );
+
+        const dados = await resposta.json();
+
+        console.log(dados);
+
+        if (!resposta.ok) {
+            throw new Error(dados.message);
+        }
+
+        document.getElementById("situacaoGeral").innerText =
+            dados.situacaoGeral;
+
+        document.getElementById("principalAtencao").innerText =
+            dados.principalAtencao;
+
+        document.getElementById("servicoCritico").innerText =
+            dados.servicoCritico;
+
+        document.getElementById("recomendacao").innerText =
+            dados.recomendacao;
+
+        document.getElementById("mensagemFinal").innerText =
+            dados.mensagemFinal;
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar diagnóstico executivo:",
+            erro
+        );
+
+    }
+
+}
+
+
+async function carregarDemandasAtrasadasPorServico() {
+    const tabela = document.getElementById("tabelaDemandasAtrasadas");
+
+    try {
+        const periodo = document.getElementById("filtroPeriodoRelatorio").value;
+
+        const resposta = await fetch(
+            `/admin/demandas-atrasadas-por-servico?periodo=${periodo}`
+        );
+
+        const resultado = await resposta.json();
+
+        if (!resultado.sucesso || !Array.isArray(resultado.dados)) {
+            throw new Error("Resposta inválida da API.");
+        }
+
+        if (resultado.dados.length === 0) {
+            tabela.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align:center;">
+                        Nenhuma demanda atrasada encontrada.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tabela.innerHTML = resultado.dados.map(item => {
+    const tempoMedio = Number(item.tempo_medio_em_dias);
+    const status = obterStatusIndicador(tempoMedio);
+
+    return `
+        <tr>
+            <td>
+                <div style="font-weight: 600;">
+                    ${status.icone} ${item.servico}
+                </div>
+
+                <div style="
+                    font-size: 11px;
+                    margin-top: 4px;
+                    font-weight: 600;
+                ">
+                    ${status.texto}
+                </div>
+            </td>
+
+            <td style="text-align: center;">
+                ${item.total_demandas_atrasadas}
+            </td>
+
+            <td style="text-align: center;">
+                ${
+                    Number.isFinite(tempoMedio)
+                        ? tempoMedio.toFixed(2).replace(".", ",") + " dias"
+                        : "--"
+                }
+            </td>
+        </tr>
+    `;
+}).join("");
+
+    } catch (erro) {
+        console.error(
+            "Erro ao carregar demandas atrasadas por serviço:",
+            erro
+        );
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="3" style="text-align:center;">
+                    Erro ao carregar os dados.
+                </td>
+            </tr>
+        `;
+    }
+}
 
 async function carregarRelatorios() {
     const periodo = document.getElementById("filtroPeriodoRelatorio").value;
@@ -551,14 +1048,45 @@ const respostaResumo = await fetch(`/api/dashboard/resumo?periodo=${periodo}`);
 
     document.getElementById("servicoMaisSolicitadoRelatorio").innerText =
         `${dadosServico.servico} (${dadosServico.total})`;
-        const respostaStatus = await fetch(
-    `/api/relatorios/status-demandas?periodo=${periodo}`
+   const respostaStatus = await fetch(
+    `/api/relatorios/distribuicao-status?periodo=${periodo}`
 );
 
 const dadosStatus = await respostaStatus.json();
 
-document.getElementById("statusDemandasRelatorio").innerText =
-    `${dadosStatus.status} (${dadosStatus.total})`;
+const totaisStatus = {
+    "RECEBIDO": 0,
+    "EM ANÁLISE": 0,
+    "EM EXECUÇÃO": 0,
+    "CONCLUÍDO": 0
+};
+
+dadosStatus.forEach((item) => {
+    const status = String(item.status || "").trim().toUpperCase();
+
+    if (Object.prototype.hasOwnProperty.call(totaisStatus, status)) {
+        totaisStatus[status] = Number(item.total) || 0;
+    }
+});
+
+document.getElementById("statusDemandasRelatorio").innerHTML = `
+    <div style="display: grid; gap: 8px; margin-top: 10px;">
+        ${Object.entries(totaisStatus)
+            .map(
+                ([status, total]) => `
+                    <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        gap: 16px;
+                    ">
+                        <span>${status}</span>
+                        <strong>${total}</strong>
+                    </div>
+                `
+            )
+            .join("")}
+    </div>
+`;
    const respostaAbertas = await fetch(
     `/api/relatorios/demandas-em-aberto?periodo=${periodo}`
 );
@@ -602,7 +1130,10 @@ window.graficoDistribuicaoStatusInstance = new Chart(ctxStatus, {
         }]
     }
 });
+
+
 await carregarTempoMedioPorServico();
+await carregarDemandasPendentesPorTempo();
 
 }
 

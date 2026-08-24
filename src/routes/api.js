@@ -1,3 +1,5 @@
+const inteligencia = require("../services/inteligenciaService");
+
 const express = require("express");
 const db = require("../db/connection");
 
@@ -11,6 +13,14 @@ function gerarProtocolo() {
     const hora = agora.toTimeString().slice(0, 8).replace(/:/g, "");
     const aleatorio = Math.floor(100 + Math.random() * 900);
     return `${data}-${hora}-${aleatorio}`;
+}
+
+function normalizarIntencao(valor) {
+    return String(valor || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
 }
 
 async function enviarParaMake(dados) {
@@ -33,6 +43,7 @@ router.post("/registros", async (req, res) => {
             intencao_identificada_codigo,
             nome_cidadao,
             telefone,
+            bairro,
             chat_id,
             descricao_problema,
             endereco_do_servico,
@@ -40,8 +51,47 @@ router.post("/registros", async (req, res) => {
             opiniao_do_cidadao,
         } = req.body;
 
+        console.log("========== DADOS RECEBIDOS ==========");
+console.log(req.body);
+console.log("INTENÇÃO:", intencao_identificada_codigo);
+console.log("=====================================");
+
         const protocolo = gerarProtocolo();
         const status = "Recebido";
+
+        const valorIntencaoRecebido = normalizarIntencao(
+    intencao_identificada_codigo
+);
+
+if (!valorIntencaoRecebido) {
+    return res.status(400).json({
+        sucesso: false,
+        mensagem: "A intenção da solicitação não foi informada."
+    });
+}
+
+const resultadoIntencoes = await db.query(`
+    SELECT id, nome
+    FROM intencoes
+    ORDER BY id
+`);
+
+const intencaoEncontrada = resultadoIntencoes.rows.find((item) => {
+    return normalizarIntencao(item.nome) === valorIntencaoRecebido;
+});
+
+if (!intencaoEncontrada) {
+    return res.status(400).json({
+        sucesso: false,
+        mensagem: `Intenção não cadastrada: ${intencao_identificada_codigo}`
+    });
+}
+
+console.log(
+    "INTENÇÃO LOCALIZADA:",
+    intencaoEncontrada.id,
+    intencaoEncontrada.nome
+);
 
         await db.query(
             `
@@ -53,20 +103,24 @@ router.post("/registros", async (req, res) => {
                 intencao_id,
                 descricao,
                 endereco,
+                bairro,
+                telefone,
                 ponto_referencia,
                 status_atual,
                 data_abertura
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
             `,
             [
                 protocolo,
                 1,
                 1,
                 1,
-                1,
+                intencaoEncontrada.id,
                 descricao_problema || "",
                 endereco_do_servico || "",
+                bairro || "",
+                telefone || "",
                 ponto_de_referencia || "",
                 status,
             ]
@@ -84,6 +138,7 @@ router.post("/registros", async (req, res) => {
             data_registro: new Date().toISOString(),
         };
 
+        
         await enviarParaMake(dadosMake);
 
         res.status(201).json({
@@ -146,10 +201,14 @@ router.get("/protocolos", async (req, res) => {
     try {
         const resultado = await db.query(
             `
-            SELECT
+           SELECT
     p.numero_protocolo AS protocolo,
     c.nome,
     i.nome AS servico,
+    p.telefone,
+    p.bairro,
+    p.endereco,
+    p.ponto_referencia,
     p.descricao,
     p.status_atual
 FROM protocolos p
@@ -427,6 +486,44 @@ router.put("/protocolos/:protocolo/status", async (req, res) => {
             });
         }
 
+        await db.query(
+    `
+    INSERT INTO historico_status (
+        protocolo_id,
+        status,
+        observacao
+    )
+    SELECT
+        id,
+        $1,
+        $2
+    FROM protocolos
+    WHERE numero_protocolo = $3
+    `,
+    [
+        status_atual,
+        "Status atualizado pelo Centro Operacional da OUVIA.",
+        protocolo
+    ]
+);
+
+// Se a demanda foi concluída, encerra a equipe atualmente responsável
+if (status_atual.toUpperCase().includes("CONCLUÍDO")) {
+    await db.query(
+        `
+        UPDATE atribuicoes_equipe
+        SET data_fim = CURRENT_TIMESTAMP
+        WHERE protocolo_id = (
+            SELECT id
+            FROM protocolos
+            WHERE numero_protocolo = $1
+        )
+        AND data_fim IS NULL
+        `,
+        [protocolo]
+    );
+}
+
         res.json({
             message: "Status atualizado com sucesso.",
             protocolo: resultado.rows[0]
@@ -441,6 +538,46 @@ router.put("/protocolos/:protocolo/status", async (req, res) => {
         });
     }
 });
+
+// ========================================
+// HISTÓRICO DE ANDAMENTO DA DEMANDA
+// ========================================
+
+router.get("/protocolos/:protocolo/historico-status", async (req, res) => {
+    try {
+        const { protocolo } = req.params;
+
+        const resultado = await db.query(
+            `
+            SELECT
+                hs.id,
+                hs.status,
+                hs.observacao,
+                hs.data_registro
+            FROM historico_status hs
+            INNER JOIN protocolos p
+                ON p.id = hs.protocolo_id
+            WHERE p.numero_protocolo = $1
+            ORDER BY hs.data_registro ASC
+            `,
+            [protocolo]
+        );
+
+        res.json(resultado.rows);
+
+    } catch (error) {
+        console.error(
+            "Erro ao carregar histórico de status:",
+            error.message
+        );
+
+        res.status(500).json({
+            message: "Erro ao carregar histórico de status.",
+            error: error.message
+        });
+    }
+});
+
 router.get("/relatorios/distribuicao-status", async (req, res) => {
     try {
         const periodo = req.query.periodo || "todos";
@@ -477,4 +614,60 @@ router.get("/relatorios/distribuicao-status", async (req, res) => {
     }
 });
     
-   module.exports = router;
+   
+ // ========================================
+// SAÚDE OPERACIONAL
+// ========================================
+
+router.get("/admin/saude-operacional", async (req, res) => {
+
+       
+    try {
+        const resultado =
+            await inteligencia.calcularSaudeOperacional(db);
+
+        res.json(resultado);
+    } catch (error) {
+        console.error(
+            "Erro ao calcular saúde operacional:",
+            error.message
+        );
+
+        res.status(500).json({
+            message: "Erro ao calcular saúde operacional.",
+            error: error.message
+        });
+    }
+});
+
+// =========================================================
+// DIAGNÓSTICO EXECUTIVO
+// =========================================================
+
+router.get("/admin/diagnostico-executivo", async (req, res) => {
+
+    try {
+
+        const resultado =
+            await inteligencia.gerarDiagnosticoExecutivo(db);
+
+        res.json(resultado);
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao gerar diagnóstico executivo:",
+            error.message
+        );
+
+        res.status(500).json({
+            message: "Erro ao gerar diagnóstico executivo.",
+            error: error.message
+        });
+
+    }
+
+});
+
+
+module.exports = router;

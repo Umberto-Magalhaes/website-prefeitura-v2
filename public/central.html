@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Central de Inteligência da OUVIA</title>
+
+    <link
+        rel="stylesheet"
+        href="/css/central.css"
+    >
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- BARRA LATERAL -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-symbol">O</div>
+
+                <div>
+                    <strong>OUVIA</strong>
+                    <span>Inteligência para Gestão Pública</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+
+                <a
+                    href="/central"
+                    class="menu-item active"
+                >
+                    <span class="menu-icon">◉</span>
+                    Visão Executiva
+                </a>
+
+                <a
+                    href="#prioridades"
+                    class="menu-item"
+                >
+                    <span class="menu-icon">◆</span>
+                    Prioridades
+                </a>
+
+                <a
+                    href="#alertas"
+                    class="menu-item"
+                >
+                    <span class="menu-icon">▲</span>
+                    Alertas
+                </a>
+
+                <a
+                    href="#recomendacoes"
+                    class="menu-item"
+                >
+                    <span class="menu-icon">✓</span>
+                    Recomendações
+                </a>
+
+                <a
+                    href="#evolucao"
+                    class="menu-item"
+                >
+                    <span class="menu-icon">↗</span>
+                    Evolução
+                </a>
+
+                <a
+                    href="/painel"
+                    class="menu-item"
+                >
+                    <span class="menu-icon">▦</span>
+                    Painel Administrativo
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <span>Município Demonstrativo</span>
+                <strong>Esperança</strong>
+            </div>
+
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="main-content">
+
+            <!-- CABEÇALHO -->
+            <header class="topbar">
+
+                <div>
+                    <p class="page-label">
+                        Central de Inteligência
+                    </p>
+
+                    <h1>
+                        Visão Executiva do Município
+                    </h1>
+                </div>
+
+                <div class="topbar-actions">
+
+                    <div class="last-update">
+                        <span>Última atualização</span>
+                        <strong id="ultimaAtualizacao">
+                            Carregando...
+                        </strong>
+                    </div>
+
+                    <button
+                        id="btnAtualizar"
+                        class="refresh-button"
+                        type="button"
+                    >
+                        Atualizar dados
+                    </button>
+
+                </div>
+
+            </header>
+
+            <!-- BRIEFING EXECUTIVO -->
+            <section class="executive-briefing">
+
+                <div class="briefing-main">
+
+                    <span class="briefing-badge">
+                        Briefing Executivo
+                    </span>
+
+                    <h2 id="saudacaoGestor">
+                        Boa tarde, Prefeito.
+                    </h2>
+
+                    <p id="briefingResumo">
+    Carregando análise inteligente da OUVIA...
+</p>
+
+                    <div class="briefing-insight">
+
+                        <span class="insight-icon">!</span>
+
+                        <div>
+                            <strong>Principal recomendação do dia</strong>
+
+                            <p id="principalRecomendacaoDia">
+    Carregando recomendação...
+</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+               <div class="briefing-status" id="briefingStatus">
+
+    <span class="status-indicator" id="statusIndicator"></span>
+
+    <div>
+        <strong id="statusTitulo">Situação geral estável</strong>
+        <p id="statusDescricao">A OUVIA já analisou os dados de hoje.</p>
+    </div>
+
+</div>
+
+            </section>
+
+            <!-- CARDS EXECUTIVOS -->
+            <section class="metrics-grid">
+
+                <article class="metric-card">
+
+                    <div class="metric-header">
+                        <span>Protocolos hoje</span>
+                        <span class="metric-symbol">＋</span>
+                    </div>
+
+                    <strong
+    id="protocolosHojeValor"
+    class="metric-value"
+>
+    -
+</strong>
+
+                   
+                </article>
+
+                <article class="metric-card">
+
+                    <div class="metric-header">
+                        <span>Em execução</span>
+                        <span class="metric-symbol">◷</span>
+                    </div>
+
+                   <strong
+    id="emExecucaoValor"
+    class="metric-value"
+>
+    -
+</strong>
+
+                    <p class="metric-description">
+                        Demandas em atendimento
+                    </p>
+
+                </article>
+
+                <article class="metric-card">
+
+                    <div class="metric-header">
+                        <span>Concluídos hoje</span>
+                        <span class="metric-symbol">✓</span>
+                    </div>
+
+                    <strong
+    id="concluidosHojeValor"
+    class="metric-value"
+>
+    -
+</strong>
+
+                    
+                </article>
+
+                <article class="metric-card critical-card">
+
+                    <div class="metric-header">
+                        <span>Atenção imediata</span>
+                        <span class="metric-symbol">!</span>
+                    </div>
+
+                    <strong
+    id="atencaoImediataValor"
+    class="metric-value"
+>
+    -
+</strong>
+
+                    <p class="metric-trend warning">
+                        Serviços prioritários
+                    </p>
+
+                </article>
+
+            </section>
+
+            <!-- CONTEÚDO EM DUAS COLUNAS -->
+            <section class="dashboard-grid">
+
+                <!-- PRIORIDADES -->
+                <article
+                    id="prioridades"
+                    class="panel priorities-panel"
+                >
+
+                    <div class="panel-header">
+
+                        <div>
+                            <span class="section-label">
+                                OP-001
+                            </span>
+
+                            <h2>
+                                Prioridades do Dia
+                            </h2>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="text-button"
+                        >
+                            Ver análise completa
+                        </button>
+
+                    </div>
+<                  
+                     <div id="listaPrioridades" class="priority-list">
+                    
+                    </div>
+
+                </article>
+
+                <!-- ALERTAS -->
+                <article
+                    id="alertas"
+                    class="panel alerts-panel"
+                >
+
+                    <div class="panel-header">
+
+                        <div>
+                            <span class="section-label">
+                                OP-003
+                            </span>
+
+                            <h2>
+                                Alertas Gerenciais
+                            </h2>
+                        </div>
+
+                       <span class="alert-count" id="alertCount">
+    0 ativos
+</span>
+
+                    </div>
+
+                    <div
+                          id="listaAlertas"
+                          class="alert-list"
+                 >
+
+                 </div>
+
+                </article>
+
+                <!-- RECOMENDAÇÕES -->
+                <article
+                    id="recomendacoes"
+                    class="panel recommendations-panel"
+                >
+
+                    <div class="panel-header">
+
+                        <div>
+                            <span class="section-label">
+                                OP-004
+                            </span>
+
+                            <h2>
+                                Recomendações Estratégicas
+                            </h2>
+                        </div>
+
+                    </div>
+
+                   <div
+    id="listaRecomendacoes"
+    class="recommendation-list"
+>
+
+ 
+
+                    </div>
+
+                </article>
+
+                <!-- EVOLUÇÃO -->
+                <article
+                    id="evolucao"
+                    class="panel evolution-panel"
+                >
+
+                    <div class="panel-header">
+
+                        <div>
+                            <span class="section-label">
+                                OP-005
+                            </span>
+
+                            <h2>
+                                Evolução Administrativa
+                            </h2>
+                        </div>
+
+                        <span class="period-label">
+                            Últimos 30 dias
+                        </span>
+
+                    </div>
+
+                    <div class="evolution-list">
+
+                    <div class="evolution-item">
+
+                    <div class="evolution-title">
+
+        <span>Tempo médio de atendimento</span>
+
+        <strong
+            id="evolucaoTempoPercentual"
+            class="positive"
+        >
+            --
+        </strong>
+    </div>
+
+    <div class="comparison-values">
+        <span id="evolucaoTempoAnterior">
+            Antes: --
+        </span>
+
+        <span id="evolucaoTempoAtual">
+            Atual: --
+        </span>
+    </div>
+
+    <div class="progress-track evolution-track">
+        <div
+            id="evolucaoTempoBarra"
+            class="progress-bar evolution-progress"
+            style="width: 0%;"
+        ></div>
+    </div>
+
+    <div class="evolution-confidence">
+    <div class="evolution-confidence-header">
+        <span>Confiabilidade da comparação</span>
+        <strong id="evolucaoConfiabilidade">--</strong>
+    </div>
+
+    <p id="evolucaoConfiabilidadeDescricao">
+        Avaliando a quantidade de dados disponíveis para comparação.
+    </p>
+</div>
+        
+
+                </article>
+
+            </section>
+
+            <!-- PERGUNTE À OUVIA -->
+           
+           <!-- =====================================================
+     OP-006 — DIAGNÓSTICO EXECUTIVO
+===================================================== -->
+
+<section class="executive-diagnosis" id="diagnosticoExecutivo">
+
+    <div class="section-code">OP-006</div>
+
+    <div class="executive-diagnosis-header">
+        <div>
+            <h2>Diagnóstico Executivo</h2>
+            <p>
+                Síntese inteligente da situação operacional do município.
+            </p>
+        </div>
+
+        <span
+            class="executive-profile"
+            id="diagnosticoExecutivoPerfil"
+        >
+            —
+        </span>
+    </div>
+
+    <div class="executive-diagnosis-content">
+
+        <h3 id="diagnosticoExecutivoTitulo">
+            Análise executiva em processamento
+        </h3>
+
+        <p id="diagnosticoExecutivoTexto">
+            O Núcleo Cognitivo da OUVIA está consolidando os indicadores
+            operacionais para produzir a análise executiva.
+        </p>
+
+        <div class="executive-guidance">
+            <strong>Orientação gerencial</strong>
+
+            <p id="diagnosticoExecutivoRecomendacao">
+                Aguardando consolidação das recomendações estratégicas.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+           
+           
+            <section class="ask-ouivia">
+
+
+                <div class="ask-introduction">
+
+                    <span class="ask-symbol">O</span>
+
+                    <div>
+                        <span class="section-label">
+                            Inteligência Conversacional
+                        </span>
+
+                        <h2>
+                            Pergunte à OUVIA
+                        </h2>
+
+                        <p>
+                            Faça uma pergunta sobre a situação operacional
+                            do município.
+                        </p>
+                    </div>
+
+                </div>
+
+                <form
+                    id="formPergunta"
+                    class="ask-form"
+                >
+
+                    <input
+                        id="inputPergunta"
+                        type="text"
+                        placeholder="Exemplo: Por que aumentaram as reclamações de iluminação?"
+                        autocomplete="off"
+                    >
+
+                    <button type="submit">
+                        Analisar
+                    </button>
+
+                </form>
+
+                <div
+                    id="respostaOuvia"
+                    class="ask-response"
+                    hidden
+                ></div>
+
+            </section>
+
+            <footer class="page-footer">
+
+                <span>
+                    OUVIA — Plataforma de Inteligência para Gestão Pública
+                </span>
+
+                <span>
+                    Ambiente Demonstrativo
+                </span>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+    <script src="/js/central.js"></script>
+
+</body>
+
+</html>

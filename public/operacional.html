@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OUVIA - Centro Operacional</title>
+
+    <link rel="stylesheet" href="/css/operacional.css">
+
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <h2>OUVIA</h2>
+
+            <span>Centro Operacional</span>
+
+        </div>
+
+        <nav>
+
+            <a href="/central">Central de Inteligência</a>
+
+            <a href="#">Demandas</a>
+
+            <a href="#">Equipes</a>
+
+            <a href="#">Protocolos</a>
+
+            <a href="#">Indicadores</a>
+
+        </nav>
+
+    </aside>
+
+
+    <main>
+
+        <header>
+
+            <h1>Centro Operacional</h1>
+
+            <p>
+                Ambiente destinado ao gerenciamento das demandas operacionais do município.
+            </p>
+
+        </header>
+
+
+        <section class="cards">
+
+            <div class="card">
+
+                <h3>Novas</h3>
+
+                <span id="novas">0</span>
+
+            </div>
+
+            <div class="card">
+
+                <h3>Em análise</h3>
+
+                <span id="analise">0</span>
+
+            </div>
+
+            <div class="card">
+
+                <h3>Em execução</h3>
+
+                <span id="execucao">0</span>
+
+            </div>
+
+            <div class="card">
+
+                <h3>Concluídas</h3>
+
+                <span id="concluidas">0</span>
+
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+<!-- INDICADORES OPERACIONAIS DAS EQUIPES          -->
+<!-- ============================================= -->
+
+<section class="indicadores-equipes">
+
+    <h2>Indicadores Operacionais das Equipes</h2>
+
+    <div class="cards-equipes">
+
+        <div class="card-equipe">
+            <h3>Demandas com equipes</h3>
+            <span id="demandasComEquipes">0</span>
+        </div>
+
+        <div class="card-equipe">
+            <h3>Situação normal</h3>
+            <span id="situacaoNormal">0</span>
+        </div>
+
+        <div class="card-equipe">
+            <h3>Em atenção</h3>
+            <span id="situacaoAtencao">0</span>
+        </div>
+
+       <div class="card-equipe">
+    <h3>Situação crítica</h3>
+    <span id="situacaoCritica">0</span>
+</div>
+
+        <div class="card-equipe">
+            <h3>Tempo médio com equipes</h3>
+            <span id="tempoMedioEquipes">0 h</span>
+        </div>
+
+    </div>
+
+</section>
+
+        <section class="lista">
+
+            <h2>Demandas Operacionais</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Protocolo</th>
+                        <th>Serviço</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Ação</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tabelaDemandas">
+
+                    <tr>
+
+                        <td colspan="5">
+
+                            Nenhuma demanda carregada.
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+                <section class="desempenho-equipes">
+
+            <h2>Desempenho Operacional das Equipes</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Equipe</th>
+                     <th>Histórico de atribuições</th>
+                     <th>Demandas distintas</th>
+                        <th>Em andamento</th>
+                        <th>Encerradas</th>
+                        <th>Tempo médio de permanência</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="tabelaDesempenhoEquipes">
+
+                    <tr>
+                        <td colspan="6">
+                            Nenhum dado de desempenho carregado.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <!-- ======================================== -->
+<!-- DEMANDAS ATUAIS POR EQUIPE              -->
+<!-- ======================================== -->
+
+<section class="demandas-atuais-equipes">
+
+    <h2>Demandas Atuais por Equipe</h2>
+
+    <table>
+        <thead>
+            <tr>
+<th>Equipe</th>
+<th>Protocolo</th>
+<th>Status</th>
+<th>Data da atribuição</th>
+<th>Tempo com a equipe</th>
+<th>Situação</th>
+<th>Observação</th>
+<th>Ação</th>
+            </tr>
+        </thead>
+
+        <tbody id="tabelaDemandasAtuaisEquipes">
+            <tr>
+                <td colspan="8">
+                    Nenhuma demanda atual carregada.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</section>
+
+            <!-- ========================================= -->
+    <!-- FICHA OPERACIONAL DA DEMANDA              -->
+    <!-- ========================================= -->
+
+    <section id="fichaDemanda" class="ficha-demanda" style="display: none;">
+
+        <h2>Ficha Operacional da Demanda</h2>
+
+       <div class="ficha-grid">
+
+    <div class="ficha-card ficha-card-protocolo">
+        <strong>Protocolo</strong>
+        <p id="fichaProtocolo">—</p>
+    </div>
+
+    <div class="ficha-card ficha-card-servico">
+        <strong>Serviço</strong>
+        <p id="fichaServico">—</p>
+    </div>
+
+    <div class="ficha-card ficha-card-status">
+        <strong>Status</strong>
+
+        <p id="fichaStatus">—</p>
+
+        <select id="novoStatus">
+            <option value="">Alterar status...</option>
+            <option value="RECEBIDO">Recebido</option>
+            <option value="EM ANÁLISE">Em análise</option>
+            <option value="EM EXECUÇÃO">Em execução</option>
+            <option value="CONCLUÍDO">Concluído</option>
+        </select>
+
+        <button type="button" id="btnAtualizarStatus">
+            Atualizar status
+        </button>
+    </div>
+
+   <div class="ficha-card ficha-card-equipe">
+    <strong>Equipe responsável</strong>
+
+    <p id="fichaEquipe">Não atribuída</p>
+
+    <select id="novaEquipe">
+        <option value="">Selecionar equipe...</option>
+    </select>
+
+    <textarea
+    id="observacaoAtribuicao"
+    placeholder="Observação da atribuição (opcional)"
+    rows="3"
+></textarea>
+
+    <button type="button" id="btnAtribuirEquipe">
+        Atribuir equipe
+    </button>
+</div>
+
+          <div class="ficha-card ficha-card-data">
+    <strong>Data de abertura</strong>
+    <p id="fichaDataAbertura">—</p>
+</div>
+
+<div class="ficha-card ficha-card-data">
+    <strong>Data de encerramento</strong>
+    <p id="fichaDataEncerramento">—</p>
+</div>
+
+        </div>
+
+        <h3>Dados do Cidadão</h3>
+
+        <div class="ficha-grid">
+
+            <div>
+                <strong>Nome</strong>
+                <p id="fichaCidadao">—</p>
+            </div>
+
+            <div>
+                <strong>Telefone</strong>
+                <p id="fichaTelefone">—</p>
+            </div>
+
+            <div>
+                <strong>E-mail</strong>
+                <p id="fichaEmail">—</p>
+            </div>
+
+        </div>
+
+        <h3>Local da Ocorrência</h3>
+
+        <div class="ficha-grid">
+
+            <div>
+                <strong>Endereço</strong>
+                <p id="fichaEndereco">—</p>
+            </div>
+
+            <div>
+                <strong>Ponto de referência</strong>
+                <p id="fichaPontoReferencia">—</p>
+            </div>
+
+        </div>
+
+        <h3>Descrição da Demanda</h3>
+
+        <div class="ficha-descricao">
+            <p id="fichaDescricao">—</p>
+        </div>
+
+        <h3>Histórico de Andamento da Demanda</h3>
+
+<div class="historico-status">
+    <table>
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Data/Hora</th>
+                <th>Observação</th>
+            </tr>
+        </thead>
+
+        <tbody id="tabelaHistoricoStatus">
+            <tr>
+                <td colspan="3">Nenhum histórico carregado.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+        <h3>Histórico de Equipes Responsáveis</h3>
+
+<div class="historico-equipes">
+    <table>
+        <thead>
+           <tr>
+    <th>Equipe</th>
+    <th>Secretaria</th>
+    <th>Início</th>
+    <th>Fim</th>
+    <th>Permanência</th>
+    <th>Observação</th>
+</tr>
+        </thead>
+
+        <tbody id="tabelaHistoricoEquipes">
+            <tr>
+                <td colspan="6">Nenhum histórico carregado.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+        <button type="button" id="btnFecharFicha">
+            Fechar ficha
+        </button>
+
+    </section>
+
+    </main>
+
+</div>
+
+<script src="/js/operacional.js"></script>
+
+</body>
+
+</html>

@@ -143,6 +143,26 @@
         <input type="text" id="nome" required />
       </div>
 
+        <div class="campo">
+    <label>Telefone</label>
+    <input type="text" id="telefone" />
+</div>
+
+<div class="campo campo-full">
+    <label>Bairro</label>
+    <input type="text" id="bairro">
+</div>
+
+<div class="campo campo-full">
+    <label>Endereço do serviço</label>
+    <input type="text" id="endereco">
+</div>
+
+<div class="campo campo-full">
+    <label>Ponto de referência</label>
+    <input type="text" id="pontoReferencia">
+</div>
+
       <div class="campo campo-full">
         <label>Descrição</label>
         <textarea id="descricao" required></textarea>
@@ -194,7 +214,10 @@ document.getElementById('formSolicitacao').addEventListener('submit', async (e)=
     origem_canal: "web",
     intencao_identificada_codigo: document.getElementById('intencao').value,
     nome_cidadao: document.getElementById('nome').value,
-    telefone: "81999999999",
+    telefone: document.getElementById("telefone").value,
+    bairro: document.getElementById("bairro").value,
+    endereco_do_servico: document.getElementById("endereco").value,
+    ponto_de_referencia: document.getElementById("pontoReferencia").value,
     descricao_problema: document.getElementById('descricao').value
   };
 

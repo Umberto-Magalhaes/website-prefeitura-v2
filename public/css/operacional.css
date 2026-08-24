@@ -1,0 +1,562 @@
+/* =========================================================
+   OUVIA - CENTRO OPERACIONAL
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fa;
+    color: #1f2937;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* =========================================================
+   MENU LATERAL
+   ========================================================= */
+
+.sidebar {
+    width: 250px;
+    background: #123f63;
+    color: white;
+    padding: 28px 22px;
+    flex-shrink: 0;
+}
+
+.logo {
+    margin-bottom: 35px;
+}
+
+.logo h2 {
+    margin: 0;
+    font-size: 30px;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    display: block;
+    margin-top: 4px;
+    font-size: 15px;
+    opacity: 0.85;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar nav a {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.sidebar nav a:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* =========================================================
+   CONTEÚDO PRINCIPAL
+   ========================================================= */
+
+main {
+    flex: 1;
+    padding: 32px;
+    max-width: 1500px;
+}
+
+header {
+    margin-bottom: 28px;
+}
+
+header h1 {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    color: #123f63;
+}
+
+header p {
+    margin: 0;
+    color: #5b6573;
+    font-size: 18px;
+}
+
+/* =========================================================
+   CARDS DE RESUMO
+   ========================================================= */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(170px, 1fr));
+    gap: 18px;
+    margin-bottom: 32px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #dce4eb;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.card h3 {
+    margin: 0 0 12px 0;
+    font-size: 17px;
+    color: #536273;
+}
+
+.card span {
+    font-size: 32px;
+    font-weight: bold;
+    color: #123f63;
+}
+
+/* =========================================================
+   LISTA DE DEMANDAS
+   ========================================================= */
+
+.lista {
+    background: white;
+    border: 1px solid #dce4eb;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.lista h2 {
+    margin-top: 0;
+    color: #123f63;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #eef4f8;
+}
+
+th,
+td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #e3e8ed;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    color: #31465a;
+    font-size: 16px;
+}
+
+td {
+    font-size: 16px;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+table button {
+    border: none;
+    border-radius: 7px;
+    padding: 9px 14px;
+    background: #125784;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+table button:hover {
+    opacity: 0.9;
+}
+
+/* =========================================================
+   FICHA OPERACIONAL
+   ========================================================= */
+
+.ficha-demanda {
+    background: white;
+    border: 1px solid #d7e0e7;
+    border-radius: 14px;
+    padding: 28px;
+    margin-top: 30px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.ficha-demanda h2 {
+    margin: 0 0 24px 0;
+    color: #123f63;
+    font-size: 28px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #dce6ee;
+}
+
+.ficha-demanda h3 {
+    margin-top: 28px;
+    margin-bottom: 16px;
+    color: #125784;
+    font-size: 21px;
+}
+
+.ficha-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    gap: 18px;
+}
+
+.ficha-grid > div {
+    background: #f7fafc;
+    border: 1px solid #e0e7ed;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.ficha-grid strong {
+    display: block;
+    margin-bottom: 7px;
+    color: #506171;
+    font-size: 15px;
+}
+
+.ficha-grid p {
+    margin: 0;
+    font-size: 17px;
+    color: #1f2937;
+    word-break: break-word;
+}
+
+.ficha-descricao {
+    background: #f7fafc;
+    border-left: 4px solid #125784;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 24px;
+}
+
+.ficha-descricao p {
+    margin: 0;
+    font-size: 17px;
+}
+
+#fichaStatus {
+    font-weight: bold;
+    color: #125784;
+}
+
+#btnFecharFicha {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 18px;
+    background: #5f6b76;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#btnFecharFicha:hover {
+    opacity: 0.9;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ficha-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+    .layout {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    main {
+        padding: 20px;
+    }
+
+    .cards,
+    .ficha-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lista {
+        overflow-x: auto;
+    }
+}
+
+/* =========================================================
+   REFINAMENTO VISUAL - FICHA OPERACIONAL
+   ========================================================= */
+
+.ficha-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 118px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ficha-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.ficha-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: #125784;
+}
+
+.ficha-card-protocolo {
+    background: #f8fbfd;
+}
+
+.ficha-card-servico {
+    background: #f8fbfd;
+}
+
+.ficha-card-status {
+    background: #f4f9fc;
+}
+
+/* =========================================================
+   CONTROLES DA FICHA OPERACIONAL
+   ========================================================= */
+
+.ficha-card select,
+.ficha-card textarea,
+.ficha-card button {
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.ficha-card select,
+.ficha-card textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1f2937;
+    padding: 9px 11px;
+    outline: none;
+}
+
+.ficha-card select:focus,
+.ficha-card textarea:focus {
+    border-color: #125784;
+    box-shadow: 0 0 0 3px rgba(18, 87, 132, 0.12);
+}
+
+.ficha-card textarea {
+    resize: vertical;
+    min-height: 70px;
+    margin-top: 10px;
+}
+
+#btnAtualizarStatus,
+#btnAtribuirEquipe {
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #125784;
+    color: #ffffff;
+    padding: 9px 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#btnAtualizarStatus:hover,
+#btnAtribuirEquipe:hover {
+    opacity: 0.9;
+}
+
+/* =========================================================
+   CARD EQUIPE RESPONSÁVEL
+   ========================================================= */
+
+.ficha-card-equipe {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.ficha-card-equipe #novaEquipe {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.ficha-card-equipe #observacaoAtribuicao {
+    width: 100%;
+    margin-top: 10px;
+    min-height: 70px;
+}
+
+.ficha-card-equipe #btnAtribuirEquipe {
+    align-self: flex-start;
+    margin-top: 10px;
+}
+
+/* ==================================================
+   ALINHAMENTO DOS CARDS DA FICHA
+   ================================================== */
+
+.ficha-grid {
+    align-items: stretch;
+}
+
+.ficha-card {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* ==================================================
+   INDICADORES VISUAIS - SITUAÇÃO DE PERMANÊNCIA
+   ================================================== */
+
+.situacao-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: center;
+    min-width: 80px;
+}
+
+.situacao-normal {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.situacao-atencao {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.situacao-critica {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* ==================================================
+   INDICADORES OPERACIONAIS DAS EQUIPES
+   ================================================== */
+
+.indicadores-equipes {
+    margin: 28px 0;
+}
+
+.indicadores-equipes h2 {
+    margin-bottom: 16px;
+}
+
+.cards-equipes {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
+.card-equipe {
+    background: #ffffff;
+    border: 1px solid #d9e2ec;
+    border-radius: 12px;
+    padding: 18px;
+    min-height: 110px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.card-equipe h3 {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.card-equipe span {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #0b4f79;
+}
+
+@media (max-width: 1200px) {
+    .cards-equipes {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 800px) {
+    .cards-equipes {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   INDICADORES OPERACIONAIS DAS EQUIPES
+   CORES GERENCIAIS
+   ============================================ */
+
+.card-equipe {
+    transition: 0.2s ease;
+}
+
+#situacaoNormal {
+    color: #0f6b46;
+}
+
+#situacaoAtencao {
+    color: #9a6700;
+}
+
+#situacaoCritica {
+    color: #a61b1b;
+}
+
+.card-equipe.card-normal {
+    background-color: #eaf8f0;
+    border: 1px solid #b8e3c9;
+}
+
+.card-equipe.card-atencao {
+    background-color: #fff7df;
+    border: 1px solid #f0d27a;
+}
+
+.card-equipe.card-critica {
+    background-color: #fdecec;
+    border: 1px solid #efb4b4;
+}
