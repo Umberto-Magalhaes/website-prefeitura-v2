@@ -194,14 +194,22 @@ const equipeCritica =
           ) || null
         : null;
 
-        const textoImpedimentoEquipeCritica =
+       const impedimentoEquipeCriticaValido =
+    impedimentoEquipeCritica &&
+    impedimentoEquipeCritica.status === "ATIVO" &&
+    (
+        !impedimentoEquipeCritica.previsaoSolucao ||
+        new Date(impedimentoEquipeCritica.previsaoSolucao) >= new Date()
+    );
+
+const textoImpedimentoEquipeCritica =
     impedimentoEquipeCritica
         ? `A permanência dessa demanda está associada a impedimento administrativo registrado do tipo ${impedimentoEquipeCritica.tipoImpedimento}, com a seguinte justificativa: ${impedimentoEquipeCritica.justificativa}`
         : null;
 
 const textoEquipeCritica =
     equipeCritica
-        ? impedimentoEquipeCritica
+        ? impedimentoEquipeCriticaValido
             ? `A ${equipeCritica.equipe} possui uma demanda com tempo de permanência superior ao limite operacional de referência, em acompanhamento há aproximadamente ${Math.round(equipeCritica.horas)} horas. A demanda aguarda a liberação do impedimento administrativo registrado, permanecendo sob acompanhamento preventivo até que a execução possa ser retomada.`
             : `A ${equipeCritica.equipe} possui uma demanda em situação crítica, em acompanhamento há aproximadamente ${Math.round(equipeCritica.horas)} horas, indicando necessidade de intervenção gerencial prioritária.`
         : "";

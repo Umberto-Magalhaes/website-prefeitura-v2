@@ -99,9 +99,17 @@ const equipeCritica =
           ) || null
         : null;
 
+const impedimentoEquipeCriticaValido =
+    impedimentoEquipeCritica &&
+    impedimentoEquipeCritica.status === "ATIVO" &&
+    (
+        !impedimentoEquipeCritica.previsaoSolucao ||
+        new Date(impedimentoEquipeCritica.previsaoSolucao) >= new Date()
+    );
+
 const textoEquipeCritica =
     equipeCritica
-        ? impedimentoEquipeCritica
+        ? impedimentoEquipeCriticaValido
             ? `A ${equipeCritica.equipe} possui uma demanda em situação crítica, em acompanhamento há aproximadamente ${Math.round(equipeCritica.horas)} horas. A permanência dessa demanda está associada a impedimento administrativo do tipo ${impedimentoEquipeCritica.tipoImpedimento}, com a seguinte justificativa: ${impedimentoEquipeCritica.justificativa}`
             : `A ${equipeCritica.equipe} possui uma demanda em situação crítica, em acompanhamento há aproximadamente ${Math.round(equipeCritica.horas)} horas, indicando necessidade de intervenção gerencial prioritária.`
         : null;

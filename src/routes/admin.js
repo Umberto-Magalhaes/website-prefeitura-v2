@@ -272,4 +272,59 @@ router.get("/demandas-atrasadas-por-servico", async (req, res) => {
     }
 });
 
+router.get("/demandas-por-servico", async (req, res) => {
+    try {
+        const servico = req.query.servico;
+
+        if (!servico) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "O serviço deve ser informado."
+            });
+        }
+
+        const resultado = await pool.query(
+            `
+            SELECT
+                p.id,
+                p.numero_protocolo,
+                p.data_abertura,
+                c.nome AS nome_cidadao,
+                i.nome AS servico,
+                p.endereco,
+                p.bairro,
+                p.descricao,
+                p.telefone,
+                p.status_atual
+            FROM protocolos p
+            LEFT JOIN cidadaos c
+                ON c.id = p.cidadao_id
+            LEFT JOIN intencoes i
+                ON i.id = p.intencao_id
+            WHERE i.nome = $1
+            ORDER BY p.data_abertura ASC
+            `,
+            [servico]
+        );
+
+        res.json({
+            sucesso: true,
+            servico: servico,
+            total: resultado.rows.length,
+            dados: resultado.rows
+        });
+
+    } catch (erro) {
+        console.error(
+            "Erro ao buscar demandas por serviço:",
+            erro
+        );
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao buscar demandas por serviço."
+        });
+    }
+});
+
 module.exports = router;

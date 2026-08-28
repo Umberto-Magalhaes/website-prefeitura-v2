@@ -93,7 +93,7 @@ console.log(
     intencaoEncontrada.nome
 );
 
-        await db.query(
+       const resultadoProtocolo = await db.query(
             `
             INSERT INTO protocolos (
                 numero_protocolo,
@@ -110,7 +110,8 @@ console.log(
                 data_abertura
             )
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
-            `,
+RETURNING id
+`,
             [
                 protocolo,
                 1,
@@ -125,6 +126,24 @@ console.log(
                 status,
             ]
         );
+
+        const protocoloId = resultadoProtocolo.rows[0].id;
+
+await db.query(
+  `
+    INSERT INTO historico_status (
+      protocolo_id,
+      status,
+      observacao
+    )
+    VALUES ($1, $2, $3)
+  `,
+  [
+    protocoloId,
+    status,
+    "Protocolo registrado automaticamente pela OUVIA."
+  ]
+);
 
         const dadosMake = {
             origem: "web",
@@ -164,10 +183,14 @@ router.get("/registros/protocolo/:protocolo", async (req, res) => {
     try {
         const resultado = await db.query(
             `
-            SELECT
+           SELECT
     p.numero_protocolo AS protocolo,
     c.nome,
     i.nome AS servico,
+    p.telefone,
+    p.endereco,
+    p.bairro,
+    p.ponto_referencia,
     p.descricao,
     p.status_atual
 FROM protocolos p

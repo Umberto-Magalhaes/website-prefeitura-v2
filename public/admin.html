@@ -139,6 +139,77 @@ label {
         button:hover {
             background: #0b2f5a;
         }
+
+    /* Tabela detalhada de Demandas por Serviço */
+.tabela-demandas-servico {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.tabela-demandas-servico th,
+.tabela-demandas-servico td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #dfe5ec;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.4;
+    overflow-wrap: break-word;
+}
+
+.tabela-demandas-servico th {
+    background: #f3f6f9;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.tabela-demandas-servico tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* Largura das 8 colunas */
+.tabela-demandas-servico th:nth-child(1),
+.tabela-demandas-servico td:nth-child(1) {
+    width: 10%;
+}
+
+.tabela-demandas-servico th:nth-child(2),
+.tabela-demandas-servico td:nth-child(2) {
+    width: 13%;
+}
+
+.tabela-demandas-servico th:nth-child(3),
+.tabela-demandas-servico td:nth-child(3) {
+    width: 12%;
+}
+
+.tabela-demandas-servico th:nth-child(4),
+.tabela-demandas-servico td:nth-child(4) {
+    width: 16%;
+}
+
+.tabela-demandas-servico th:nth-child(5),
+.tabela-demandas-servico td:nth-child(5) {
+    width: 10%;
+}
+
+.tabela-demandas-servico th:nth-child(6),
+.tabela-demandas-servico td:nth-child(6) {
+    width: 21%;
+}
+
+.tabela-demandas-servico th:nth-child(7),
+.tabela-demandas-servico td:nth-child(7) {
+    width: 10%;
+}
+
+.tabela-demandas-servico th:nth-child(8),
+.tabela-demandas-servico td:nth-child(8) {
+    width: 8%;
+}
+
     </style>
 </head>
 
@@ -266,7 +337,7 @@ Painel executivo para monitoramento, análise e apoio à tomada de decisões da 
 ">
     <thead style="background-color: #f1f5f9;">
         <tr>
-            <th style="text-align:left; padding:12px; border-bottom:2px solid #cbd5e1;">Protocolo</th>
+           <th style="text-align:left; padding:12px; border-bottom:2px solid #cbd5e1; white-space:nowrap; width:180px;">Protocolo</th>
             <th style="text-align:left; padding:12px; border-bottom:2px solid #cbd5e1;">Cidadão</th>
             <th style="text-align:left; padding:12px; border-bottom:2px solid #cbd5e1;">Serviço</th>
             <th style="text-align:left; padding:12px; border-bottom:2px solid #cbd5e1;">Descrição</th>
@@ -277,6 +348,8 @@ Painel executivo para monitoramento, análise e apoio à tomada de decisões da 
     <tbody>
     </tbody>
 </table>
+
+
 
 <div class="box" id="secaoRelatorios">
     <h2>Relatórios</h2>
@@ -426,6 +499,72 @@ Painel executivo para monitoramento, análise e apoio à tomada de decisões da 
 
 </div>        
 </div>
+
+<div class="box" style="margin-top:30px;">
+
+    <h2>Demandas por Serviço</h2>
+
+    <p>
+        Consulte todas as demandas registradas para um determinado serviço,
+        organizadas em ordem cronológica.
+    </p>
+
+    <div style="margin-bottom:20px;">
+        <label for="filtroServicoDemandas">
+            <strong>Selecione o serviço:</strong>
+        </label>
+
+        <select id="filtroServicoDemandas" style="margin-left:10px;">
+            <option value="">Selecione...</option>
+            <option value="Coleta de Lixo">Coleta de Lixo</option>
+            <option value="Limpeza">Limpeza</option>
+            <option value="Poda de Árvore">Poda de Árvore</option>
+            <option value="Tapa-buraco">Tapa-buraco</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Posto de Saúde">Posto de Saúde</option>
+            <option value="Iluminação">Iluminação</option>
+            <option value="Escola">Escola</option>
+            <option value="Outros">Outros</option>
+            <option value="Denúncia">Denúncia</option>
+        </select>
+
+        <button
+            type="button"
+            id="btnConsultarDemandasServico"
+            style="margin-left:10px;"
+        >
+            Consultar
+        </button>
+    </div>
+
+    <div id="resumoDemandasServico"></div>
+
+    <table class="tabela-relatorios tabela-demandas-servico">
+
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Protocolo</th>
+                <th>Cidadão</th>
+                <th>Endereço</th>
+                <th>Bairro</th>
+                <th>Descrição</th>
+                <th>Telefone</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody id="tabelaDemandasPorServico">
+            <tr>
+                <td colspan="8" style="text-align:center;">
+                    Selecione um serviço para consultar as demandas.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
         </main>
 
     </div>
@@ -561,9 +700,13 @@ async function consultarProtocolo() {
             <div style="margin-top:20px;padding:20px;border:1px solid #d1d5db;border-radius:10px;background:#f9fafb;">
                 <h3>Dados do Protocolo</h3>
 
-                <p><strong>Protocolo:</strong> ${dados.protocolo || ""}</p>
-                <p><strong>Nome:</strong> ${dados.nome || ""}</p>
+        <p><strong>Protocolo:</strong> ${dados.protocolo || ""}</p>
+<p><strong>Nome:</strong> ${dados.nome || ""}</p>
 <p><strong>Serviço:</strong> ${dados.servico || ""}</p>
+<p><strong>Telefone:</strong> ${dados.telefone || ""}</p>
+<p><strong>Endereço:</strong> ${dados.endereco || ""}</p>
+<p><strong>Bairro:</strong> ${dados.bairro || ""}</p>
+<p><strong>Ponto de referência:</strong> ${dados.ponto_referencia || ""}</p>
 <p><strong>Descrição:</strong> ${dados.descricao || ""}</p>
 <p><strong>Status:</strong> ${dados.status_atual || ""}</p>
 
@@ -838,8 +981,7 @@ async function carregarProtocolos() {
 
             tbody.innerHTML += `
                 <tr>
-                    <td style="padding:12px; border-bottom:1px solid #e2e8f0;">${p.protocolo}</td>
-<td style="padding:12px; border-bottom:1px solid #e2e8f0;">${p.nome}</td>
+<td style="padding:12px; border-bottom:1px solid #e2e8f0; white-space:nowrap;">${p.protocolo}</td>
 <td style="padding:12px; border-bottom:1px solid #e2e8f0;">${p.servico}</td>
 <td style="padding:12px; border-bottom:1px solid #e2e8f0;">${p.descricao}</td>
 <td style="padding:12px; border-bottom:1px solid #e2e8f0;">${p.status_atual}</td>
@@ -908,6 +1050,16 @@ carregarProtocolos();
 carregarRelatorios();
 carregarDemandasAtrasadasPorServico();
 carregarDiagnosticoExecutivo();
+
+const btnConsultarDemandasServico =
+    document.getElementById("btnConsultarDemandasServico");
+
+if (btnConsultarDemandasServico) {
+    btnConsultarDemandasServico.addEventListener(
+        "click",
+        carregarDemandasPorServico
+    );
+}
 
 async function carregarDiagnosticoExecutivo() {
 
@@ -1024,6 +1176,97 @@ async function carregarDemandasAtrasadasPorServico() {
             <tr>
                 <td colspan="3" style="text-align:center;">
                     Erro ao carregar os dados.
+                </td>
+            </tr>
+        `;
+    }
+}
+
+async function carregarDemandasPorServico() {
+    const servico = document.getElementById("filtroServicoDemandas").value;
+    const tabela = document.getElementById("tabelaDemandasPorServico");
+    const resumo = document.getElementById("resumoDemandasServico");
+
+    if (!servico) {
+        resumo.innerHTML = "";
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align:center;">
+                    Selecione um serviço para consultar as demandas.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    try {
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align:center;">
+                    Carregando...
+                </td>
+            </tr>
+        `;
+
+        const resposta = await fetch(
+            `/admin/demandas-por-servico?servico=${encodeURIComponent(servico)}`
+        );
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok || !resultado.sucesso || !Array.isArray(resultado.dados)) {
+            throw new Error(
+                resultado.mensagem || "Resposta inválida da API."
+            );
+        }
+
+        resumo.innerHTML = `
+            <p>
+                <strong>${resultado.total}</strong>
+                demanda(s) encontrada(s) para
+                <strong>${resultado.servico}</strong>.
+            </p>
+        `;
+
+        if (resultado.dados.length === 0) {
+            tabela.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align:center;">
+                        Nenhuma demanda encontrada para este serviço.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tabela.innerHTML = resultado.dados.map(item => {
+            const data = item.data_abertura
+                ? new Date(item.data_abertura).toLocaleString("pt-BR")
+                : "-";
+
+            return `
+                <tr>
+                    <td>${data}</td>
+                    <td>${item.numero_protocolo || "-"}</td>
+                    <td>${item.nome_cidadao || "-"}</td>
+                    <td>${item.endereco || "-"}</td>
+                    <td>${item.bairro || "-"}</td>
+                    <td>${item.descricao || "-"}</td>
+                    <td>${item.telefone || "-"}</td>
+                    <td>${item.status_atual || "-"}</td>
+                </tr>
+            `;
+        }).join("");
+
+    } catch (erro) {
+        console.error("Erro ao carregar demandas por serviço:", erro);
+
+        resumo.innerHTML = "";
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align:center;">
+                    Erro ao carregar as demandas.
                 </td>
             </tr>
         `;
