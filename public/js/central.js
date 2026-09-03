@@ -21,6 +21,9 @@ const evolucaoConfiabilidadeDescricao =
     const listaPrioridades =
     document.getElementById('listaPrioridades');
 
+    const listaPriorizacaoGerencial =
+    document.getElementById('listaPriorizacaoGerencial');
+
     const listaAlertas =
     document.getElementById('listaAlertas');
 
@@ -593,6 +596,134 @@ async function carregarPrioridades() {
     }
 }
 
+async function carregarPriorizacaoGerencial() {
+    try {
+        const resposta =
+            await fetch('/central/api/resumo');
+
+        if (!resposta.ok) {
+            throw new Error(
+                'Erro ao carregar priorização gerencial.'
+            );
+        }
+
+        const dados =
+            await resposta.json();
+
+        const rankingGerencial =
+            dados.priorizacaoGerencialPorServico || [];
+
+        if (!listaPriorizacaoGerencial) {
+            throw new Error(
+                'Elemento listaPriorizacaoGerencial não encontrado.'
+            );
+        }
+
+        if (
+            !Array.isArray(rankingGerencial) ||
+            rankingGerencial.length === 0
+        ) {
+            listaPriorizacaoGerencial.innerHTML = `
+                <div class="priority-item">
+                    <div class="priority-content">
+                        <strong>
+                            Sem dados para priorização gerencial
+                        </strong>
+
+                        <p>
+                            Ainda não existem dados suficientes
+                            para gerar a análise gerencial por serviço.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            return;
+        }
+
+        listaPriorizacaoGerencial.innerHTML =
+            rankingGerencial
+                .slice(0, 5)
+                .map((item, indice) => {
+                    const servico =
+                        item.servico ||
+                        'Serviço não identificado';
+
+                    const prioridade =
+                        item.prioridadeBase ||
+                        'SEM DADOS';
+
+                    const saude =
+                        item.classificacaoSaude ||
+                        'SEM DADOS';
+
+                    const tendencia =
+                        item.tendencia ||
+                        'SEM DADOS';
+
+                    const evidencia =
+                        item.nivelEvidencia ||
+                        'SEM DADOS';
+
+                    const padraoCriticidade =
+                        item.padraoCriticidade ||
+                        'SEM_CRITICIDADE_RELEVANTE';
+
+                    return `
+                        <div class="priority-item">
+                            <div class="priority-position">
+                                ${indice + 1}
+                            </div>
+
+                            <div class="priority-content">
+                                <div class="priority-title-row">
+                                    <strong>
+                                        ${servico}
+                                    </strong>
+
+                                    <span class="priority-score">
+                                        ${prioridade}
+                                    </span>
+                                </div>
+
+                                <p>
+                                    Saúde: ${saude}
+                                    • Tendência: ${tendencia}
+                                    • Evidência: ${evidencia}
+                                </p>
+
+                                <p>
+                                    Padrão de criticidade:
+                                    ${padraoCriticidade}
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                })
+                .join('');
+
+    } catch (erro) {
+        console.error(
+            'Erro ao carregar priorização gerencial:',
+            erro
+        );
+
+        if (listaPriorizacaoGerencial) {
+            listaPriorizacaoGerencial.innerHTML = `
+                <div class="priority-item">
+                    <div class="priority-content">
+                        <strong>
+                            Não foi possível carregar
+                            a priorização gerencial
+                        </strong>
+                    </div>
+                </div>
+            `;
+        }
+    }
+}
+
+
 async function carregarAlertas() {
     try {
         const resposta =
@@ -861,9 +992,10 @@ async function carregarRecomendacoes() {
         setTimeout(() => {
 
           carregarResumoDashboard();
-          carregarPrioridades();
-          carregarAlertas();
-          carregarRecomendacoes();
+carregarPrioridades();
+carregarPriorizacaoGerencial();
+carregarAlertas();
+carregarRecomendacoes();
 
             btnAtualizar.disabled = false;
             btnAtualizar.textContent =
@@ -936,9 +1068,10 @@ async function carregarRecomendacoes() {
     definirSaudacao();
     atualizarHorario();
     carregarResumoDashboard();
-    carregarPrioridades(); 
+    carregarPrioridades();
+    carregarPriorizacaoGerencial();
     carregarAlertas();
-    carregarRecomendacoes();   
+    carregarRecomendacoes();
 
     console.log(
         'Central de Inteligência da OUVIA carregada com sucesso.'

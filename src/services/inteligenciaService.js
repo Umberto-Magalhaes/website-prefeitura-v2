@@ -12,6 +12,11 @@ const {
     analisarTendencia
 } = require("../motores/motorTendencia");
 
+const {
+    construirEvidenciaGerencial,
+    compararPrioridades
+} = require("../motores/motorPriorizacaoGerencial");
+
 const { gerarRespostaExecutiva
 } = require("./orquestradorExecutivo");
 
@@ -138,51 +143,6 @@ async function calcularSaudePorServico(pool) {
 }
 
 // ----------------------------------------
-// PRINCIPAL GARGALO
-// ----------------------------------------
-
-async function calcularPrincipalGargalo(pool) {
-
-    const saudePorServico =
-        await calcularSaudePorServico(pool);
-
-    if (!saudePorServico || saudePorServico.length === 0) {
-        return null;
-    }
-
-    const ranking = [...saudePorServico].sort((a, b) => {
-
-    if (a.percentualSaude !== b.percentualSaude) {
-        return a.percentualSaude - b.percentualSaude;
-    }
-
-    if (b.critico !== a.critico) {
-        return b.critico - a.critico;
-    }
-
-    if (b.atencao !== a.atencao) {
-        return b.atencao - a.atencao;
-    }
-
-    return b.totalAbertas - a.totalAbertas;
-});
-
-    const principal = ranking[0];
-
-    return {
-        intencaoId: principal.intencaoId,
-        servico: principal.servico,
-        percentualSaude: principal.percentualSaude,
-        classificacaoSaude: principal.classificacaoSaude,
-        totalAbertas: principal.totalAbertas,
-        normal: principal.normal,
-        referenciaExcedida: principal.referenciaExcedida,
-        atencao: principal.atencao,
-        critico: principal.critico
-    };
-}
-
-// ----------------------------------------
 // TENDÊNCIA
 // ----------------------------------------
 
@@ -264,6 +224,60 @@ async function calcularTendenciaPorServico(pool) {
     });
 }
 
+// ==========================================================
+// PRIORIZAÇÃO GERENCIAL POR SERVIÇO
+// ==========================================================
+
+async function calcularPriorizacaoGerencialPorServico(pool) {
+
+    const saudePorServico =
+        await calcularSaudePorServico(pool);
+
+    const tendenciaPorServico =
+        await calcularTendenciaPorServico(pool);
+
+    const priorizacao = saudePorServico.map((saude) => {
+
+        const tendenciaCorrespondente =
+            tendenciaPorServico.find(
+                (item) => item.intencaoId === saude.intencaoId
+            );
+
+        const tendencia =
+            tendenciaCorrespondente?.tendencia || "ESTAVEL";
+
+        const evidencia =
+            construirEvidenciaGerencial({
+                classificacaoSaude: saude.classificacaoSaude,
+                tendencia,
+                totalAbertas: saude.totalAbertas,
+                critico: saude.critico
+            });
+
+        return {
+            intencaoId: saude.intencaoId,
+            servico: saude.servico,
+
+            classificacaoSaude: saude.classificacaoSaude,
+            percentualSaude: saude.percentualSaude,
+
+            tendencia,
+
+            totalAbertas: saude.totalAbertas,
+            critico: saude.critico,
+
+            ...evidencia
+        };
+
+
+    });
+
+priorizacao.sort(compararPrioridades);
+
+return priorizacao;
+
+}
+
 // =========================================================
 // DIAGNÓSTICO EXECUTIVO
 // =========================================================
@@ -271,6 +285,8 @@ async function calcularTendenciaPorServico(pool) {
 async function gerarDiagnosticoExecutivo(db) {
 
     const saude = await calcularSaudeOperacional(db);
+
+    const saudePorServico = await calcularSaudePorServico(db);
 
     const diagnostico = gerarDiagnostico({
         saudeOperacional: saude
@@ -281,6 +297,8 @@ async function gerarDiagnosticoExecutivo(db) {
         dataGeracao: new Date(),
 
         saudeOperacional: saude,
+
+        saudePorServico,
 
         situacaoGeral: diagnostico.resumo,
 
@@ -344,23 +362,14 @@ async function gerarResumoDashboard(db) {
     const diagnostico =
     await gerarDiagnosticoExecutivo(db);
 
-    const saudePorServico =
-    await calcularSaudePorServico(db);
-
-console.log("=== TESTE SAÚDE POR SERVIÇO ===");
-console.dir(saudePorServico, { depth: null });
-
-const principalGargalo =
-    await calcularPrincipalGargalo(db);
-
-console.log("=== TESTE PRINCIPAL GARGALO ===");
-console.dir(principalGargalo, { depth: null });
-
     const tendencia =
     await calcularTendencia(db);
 
     const tendenciaPorServico =
     await calcularTendenciaPorServico(db);
+
+    const priorizacaoGerencialPorServico =
+    await calcularPriorizacaoGerencialPorServico(db);
 
     const recomendacoes =
     await gerarRecomendacoes(db);
@@ -398,6 +407,8 @@ console.dir(principalGargalo, { depth: null });
 
     tendenciaPorServico,
 
+    priorizacaoGerencialPorServico,
+
     evolucao:
         resultadoCognitivo?.evolucao || null,
 
@@ -423,9 +434,9 @@ module.exports = {
 
     calcularSaudeOperacional,
     calcularSaudePorServico,
-    calcularPrincipalGargalo,
     calcularTendencia,
     calcularTendenciaPorServico,
+    calcularPriorizacaoGerencialPorServico,
     gerarDiagnosticoExecutivo,
     gerarResumoDashboard
 
